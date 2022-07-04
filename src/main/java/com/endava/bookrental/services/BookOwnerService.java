@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BookOwnerService {
@@ -43,12 +44,12 @@ public class BookOwnerService {
         bookOwnerRepository.deleteAll();
     }
 
-    public Book getBookForBookOwnerId(Integer id){
-        return bookService.getBook(bookOwnerRepository.getBookForBookOwnerId(id));
+    public Optional<Book> getBookForBookOwnerId(Integer id){
+        return bookService.getBookById(bookOwnerRepository.getBookForBookOwnerId(id));
     }
 
     public void deleteBookOwner(Integer id){
-        bookService.deleteBook(getBookForBookOwnerId(id).getBookId());
+        bookService.deleteBook(getBookForBookOwnerId(id).get().getBookId());
         bookOwnerRepository.deleteById(id);
     }
 }
