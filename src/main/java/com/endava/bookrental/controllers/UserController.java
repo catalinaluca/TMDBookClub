@@ -25,11 +25,9 @@ public class UserController {
 
     @RequestMapping(path = "/{id}",method = RequestMethod.GET)
     public Object getUserById(@PathVariable("id") Long user_id){
-        try{
-            return userService.getUserById(user_id).get();
-        }catch (Exception e){
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
+            return userService.getUserById(user_id).isPresent()?
+                        userService.getUserById(user_id).get():
+                            new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @RequestMapping(value = "/add",method = RequestMethod.POST)
