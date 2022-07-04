@@ -49,4 +49,14 @@ public class BookOwnerController {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
+
+    @RequestMapping(path = "/delete/{id}",method = RequestMethod.DELETE)
+    public Object deleteBookOwner(@PathVariable("id") Integer id){
+        try {
+            bookOwnerService.deleteBookOwner(id);
+            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        }catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
 }

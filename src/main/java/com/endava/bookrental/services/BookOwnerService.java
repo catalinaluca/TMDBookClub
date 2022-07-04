@@ -38,5 +38,9 @@ public class BookOwnerService {
     public void deleteAll(){
         bookOwnerRepository.deleteAll();
     }
+
+    public void deleteBookOwner(Integer id){
+        bookOwnerRepository.deleteById(id);
+    }
 }
 
