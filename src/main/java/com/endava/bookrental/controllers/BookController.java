@@ -22,12 +22,7 @@ public class BookController {
 
     @RequestMapping(path = "/{id}",method = RequestMethod.GET)
     public Object getBookById(@PathVariable("id") Integer id){
-        try {
-            return bookService.getBookById(id);
-        }catch (Exception e){
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-
+            return bookService.getBookById(id).isPresent()?bookService.getBookById(id).get():new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     @RequestMapping(path = "/add",method = RequestMethod.POST)
     public Book addBook(@RequestBody Book book){
