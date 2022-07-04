@@ -3,6 +3,7 @@ package com.endava.bookrental.services;
 import com.endava.bookrental.models.Book;
 import com.endava.bookrental.repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,7 +23,9 @@ public class BookService {
     }
 
     public Book addBook(Book book){
-        return bookRepository.save(book);
+         return  bookRepository.findByTitleAuthorISBN(book.getTitle(),book.getAuthor(),book.getIsbn()).isPresent()?
+                    bookRepository.findByTitleAuthorISBN(book.getTitle(),book.getAuthor(),book.getIsbn()).get():
+                        bookRepository.save(book);
     }
 
     public void deleteBook(Integer id){

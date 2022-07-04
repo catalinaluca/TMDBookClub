@@ -23,24 +23,22 @@ public class BookOwnerController {
 
     @RequestMapping(path = "/owner/{id}",method = RequestMethod.GET)
     public Object getBooksForOwner(@PathVariable("id") Integer id){
-        try {
-            return bookOwnerService.getBooksForOwner(id);
-        }catch (Exception e){
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
+            return bookOwnerService.getBooksForOwner(id).isPresent()?
+                    bookOwnerService.getBooksForOwner(id):
+                        new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
     }
 
     @RequestMapping(path = "/book/{id}",method = RequestMethod.GET)
     public Object getOwnerForBook(@PathVariable("id") Integer id){
-        try {
-            return bookOwnerService.getOwnerForBook(id);
-        }catch (Exception e){
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
+
+            return bookOwnerService.getOwnerForBook(id).isPresent()?
+                    bookOwnerService.getOwnerForBook(id):
+                        new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @RequestMapping(path = "/add",method = RequestMethod.POST)
-    public Object addBookForOwner(@RequestBody Book book, @PathVariable("id") Integer id){
+    public Object addBookForOwner(@RequestBody Book book, @RequestParam(name = "id") Integer id){
         try{
             return bookOwnerService.addBookForOwner(book,id);
         }catch (Exception e){
