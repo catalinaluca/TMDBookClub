@@ -24,8 +24,12 @@ public class UserController {
     }
 
     @RequestMapping(path = "/{id}",method = RequestMethod.GET)
-    public Optional<User> getUserById(@PathVariable("id") Long user_id){
-        return userService.getUserById(user_id);
+    public Object getUserById(@PathVariable("id") Long user_id){
+        try{
+            return userService.getUserById(user_id).get();
+        }catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
     }
 
     @RequestMapping(value = "/add",method = RequestMethod.POST)
