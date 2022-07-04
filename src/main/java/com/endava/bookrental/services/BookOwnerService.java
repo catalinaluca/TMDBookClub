@@ -24,11 +24,11 @@ public class BookOwnerService {
         return bookOwnerRepository.findAll();
     }
 
-    public BookOwner getBooksForOwner(Integer id){
+    public Optional<BookOwner> getBooksForOwner(Integer id){
         return bookOwnerRepository.getBooksForOwner(id);
     }
 
-    public BookOwner getOwnerForBook(Integer id){
+    public Optional<BookOwner> getOwnerForBook(Integer id){
         return bookOwnerRepository.getOwnerForBook(id);
     }
 
@@ -45,7 +45,7 @@ public class BookOwnerService {
     }
 
     public Optional<Book> getBookForBookOwnerId(Integer id){
-        return bookService.getBookById(bookOwnerRepository.getBookForBookOwnerId(id));
+        return bookService.getBookById(bookOwnerRepository.getBookForBookOwnerId(id).get());
     }
 
     public void deleteBookOwner(Integer id){

@@ -22,13 +22,21 @@ public class BookOwnerController {
     }
 
     @RequestMapping(path = "/owner/{id}",method = RequestMethod.GET)
-    public BookOwner getBooksForOwner(@PathVariable("id") Integer id){
-        return bookOwnerService.getBooksForOwner(id);
+    public Object getBooksForOwner(@PathVariable("id") Integer id){
+        try {
+            return bookOwnerService.getBooksForOwner(id);
+        }catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
     }
 
     @RequestMapping(path = "/book/{id}",method = RequestMethod.GET)
-    public BookOwner getOwnerForBook(@PathVariable("id") Integer id){
-        return bookOwnerService.getOwnerForBook(id);
+    public Object getOwnerForBook(@PathVariable("id") Integer id){
+        try {
+            return bookOwnerService.getOwnerForBook(id);
+        }catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
     }
 
     @RequestMapping(path = "/add",method = RequestMethod.POST)
