@@ -2,6 +2,7 @@ package com.endava.bookrental.services;
 
 import com.endava.bookrental.models.Book;
 import com.endava.bookrental.models.BookOwner;
+import com.endava.bookrental.models.User;
 import com.endava.bookrental.repositories.BookOwnerRepository;
 import com.endava.bookrental.repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,9 @@ public class BookOwnerService {
     private BookOwnerRepository bookOwnerRepository;
     @Autowired
     private BookService bookService;
+
+    @Autowired
+    private UserService userService;
     public List<BookOwner> getAllBooksOwners(){
         return bookOwnerRepository.findAll();
     }
@@ -39,7 +43,12 @@ public class BookOwnerService {
         bookOwnerRepository.deleteAll();
     }
 
+    public Book getBookForBookOwnerId(Integer id){
+        return bookService.getBook(bookOwnerRepository.getBookForBookOwnerId(id));
+    }
+
     public void deleteBookOwner(Integer id){
+        bookService.deleteBook(getBookForBookOwnerId(id).getBookId());
         bookOwnerRepository.deleteById(id);
     }
 }

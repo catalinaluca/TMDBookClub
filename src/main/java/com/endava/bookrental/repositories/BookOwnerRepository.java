@@ -15,8 +15,7 @@ public interface BookOwnerRepository extends JpaRepository<BookOwner,Integer> {
     @Query("SELECT b FROM book_owner b where b.bookId=:id")
     public BookOwner getOwnerForBook(Integer id);
 
-//    @Modifying
-//    @Query(value = "insert INTO books (\"title\",\"author\",\"isbn\") VALUES book.")
-//    @Transactional
-//    public BookOwner addBookForOwner(Book book,Integer id);
+    @Query("select b.bookId from book_owner b where b.bookOwnerId=:id")
+    public Integer getBookForBookOwnerId(Integer id);
+
 }
