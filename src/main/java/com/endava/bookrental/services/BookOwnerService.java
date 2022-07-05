@@ -44,13 +44,14 @@ public class BookOwnerService {
         bookOwnerRepository.deleteAll();
     }
 
-    public Optional<Book> getBookForBookOwnerId(Integer id){
-        return bookService.getBookById(bookOwnerRepository.getBookForBookOwnerId(id).get());
-    }
+    public void deleteBookOwner(Integer id) throws Exception{
+        Integer bookId=0;
+        if(bookOwnerRepository.findById(id).isPresent()){
+            bookId=bookOwnerRepository.findById(id).get().getBookId();
+            bookService.deleteBook(bookId);
+            bookOwnerRepository.deleteById(id);
+        }else throw new Exception();
 
-    public void deleteBookOwner(Integer id){
-        bookService.deleteBook(getBookForBookOwnerId(id).get().getBookId());
-        bookOwnerRepository.deleteById(id);
     }
 }
 
