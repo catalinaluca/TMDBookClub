@@ -32,6 +32,10 @@ public class BookOwnerService {
         return bookOwnerRepository.getOwnerForBook(id);
     }
 
+    public Optional<Integer> getBookOwnerIdByBookId(Integer id){
+        return bookOwnerRepository.getBookOwnerByBookId();
+    }
+
     public BookOwner addBookForOwner(Book book, Integer id){
         bookService.addBook(book);
         BookOwner bookOwner=new BookOwner();
