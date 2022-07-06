@@ -3,9 +3,9 @@ package com.endava.bookrental.services;
 import com.endava.bookrental.models.Book;
 import com.endava.bookrental.repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,5 +34,13 @@ public class BookService {
 
     public void deleteAllBooks(){
         bookRepository.deleteAll();
+    }
+
+    public List<Book> getAvailableBooks(){
+        return bookRepository.getAvailableBooks();
+    }
+
+    public List<Object> getBookByTitleOrAuthor(String  title, String  author){
+        return bookRepository.getBookByTitleOrAuthor(title,author);
     }
 }
