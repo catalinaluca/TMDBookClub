@@ -37,7 +37,7 @@ public class BorrowedBookController {
         periods.add(30);
         return periods;
     }
-    @RequestMapping(path = "/borrow",method = RequestMethod.GET)
+    @RequestMapping(path = "/borrow",method = RequestMethod.POST)
     public Object borrowBook(@RequestParam(name = "userId") Integer userId,@RequestParam(name = "bookId") Integer bookId,@RequestParam(name = "period")Integer period){
         if(!getPeriods().contains(period)){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

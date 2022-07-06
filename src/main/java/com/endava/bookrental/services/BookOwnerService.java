@@ -33,7 +33,7 @@ public class BookOwnerService {
     }
 
     public Optional<Integer> getBookOwnerIdByBookId(Integer id){
-        return bookOwnerRepository.getBookOwnerByBookId(id);
+        return bookOwnerRepository.getBookOwnerIdByBookId(id);
     }
 
     public BookOwner addBookForOwner(Book book, Integer id){
