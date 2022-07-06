@@ -49,4 +49,14 @@ public class BookController {
         }
     }
 
+    @RequestMapping(path = "/available",method = RequestMethod.GET)
+    public List<Book> getAvailableBooks(){
+        return bookService.getAvailableBooks();
+    }
+
+    @RequestMapping(path = "/searchByTitleOrAuthor",method = RequestMethod.GET)
+    public List<Object> getBookByTitleOrAuthor(@RequestParam(name = "title",required = false) String title, @RequestParam(name = "author",required = false) String author){
+        return bookService.getBookByTitleOrAuthor(title,author);
+    }
+
 }
