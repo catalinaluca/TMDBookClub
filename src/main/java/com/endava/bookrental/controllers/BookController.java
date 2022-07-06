@@ -22,7 +22,7 @@ public class BookController {
 
     @RequestMapping(path = "/{id}",method = RequestMethod.GET)
     public Object getBookById(@PathVariable("id") Integer id){
-            return bookService.getBookById(id).isPresent()?bookService.getBookById(id).get():new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return bookService.getBookById(id).isPresent()?bookService.getBookById(id).get():new ResponseEntity<>("This book does not exist!",HttpStatus.NO_CONTENT);
     }
     @RequestMapping(path = "/add",method = RequestMethod.POST)
     public Book addBook(@RequestBody Book book){
@@ -33,9 +33,9 @@ public class BookController {
     public Object deleteBook(@PathVariable("id") Integer id){
         try{
             bookService.deleteBook(id);
-            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+            return new ResponseEntity<>("Book deleted successfully!",HttpStatus.ACCEPTED);
         }catch (Exception e){
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>("This book does not exist!",HttpStatus.NO_CONTENT);
         }
     }
 
@@ -43,20 +43,30 @@ public class BookController {
     public Object deleteAllBooks(){
         try{
             bookService.deleteAllBooks();
-            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+            return new ResponseEntity<>("Deleted successfully!",HttpStatus.ACCEPTED);
         }catch (Exception e){
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>("Empty database!",HttpStatus.NO_CONTENT);
         }
     }
 
     @RequestMapping(path = "/available",method = RequestMethod.GET)
-    public List<Book> getAvailableBooks(){
-        return bookService.getAvailableBooks();
+    public List<Object> getAvailableBooks(){
+        List<Object> availableList=bookService.getAvailableBooks();
+        if(!availableList.isEmpty()){
+            return availableList;
+        }
+        availableList.add(new ResponseEntity<>("There are not any available books for now!",HttpStatus.NO_CONTENT));
+        return availableList;
     }
 
     @RequestMapping(path = "/searchByTitleOrAuthor",method = RequestMethod.GET)
     public List<Object> getBookByTitleOrAuthor(@RequestParam(name = "title",required = false) String title, @RequestParam(name = "author",required = false) String author){
-        return bookService.getBookByTitleOrAuthor(title,author);
+        List<Object> searchList=bookService.getBookByTitleOrAuthor(title,author);
+        if(!searchList.isEmpty()){
+            return searchList;
+        }
+        searchList.add(new ResponseEntity<>("There are no books that satisfy your search!",HttpStatus.NO_CONTENT));
+        return searchList;
     }
 
 }

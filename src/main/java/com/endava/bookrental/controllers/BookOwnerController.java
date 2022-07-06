@@ -25,7 +25,7 @@ public class BookOwnerController {
     public Object getBooksForOwner(@PathVariable("id") Integer id){
             return bookOwnerService.getBooksForOwner(id).isPresent()?
                     bookOwnerService.getBooksForOwner(id):
-                        new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                        new ResponseEntity<>("This user does not own any books!",HttpStatus.NO_CONTENT);
 
     }
 
@@ -34,7 +34,7 @@ public class BookOwnerController {
 
             return bookOwnerService.getOwnerForBook(id).isPresent()?
                     bookOwnerService.getOwnerForBook(id):
-                        new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                        new ResponseEntity<>("This book does not have an owner or it does not exist at all!",HttpStatus.NO_CONTENT);
     }
 
     @RequestMapping(path = "/add",method = RequestMethod.POST)
@@ -42,7 +42,7 @@ public class BookOwnerController {
         try{
             return bookOwnerService.addBookForOwner(book,id);
         }catch (Exception e){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -50,9 +50,9 @@ public class BookOwnerController {
     public Object deleteAll(){
         try {
             bookOwnerService.deleteAll();
-            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+            return new ResponseEntity<>("Deleted successfully!",HttpStatus.ACCEPTED);
         }catch (Exception e){
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>("Empty database!",HttpStatus.NO_CONTENT);
         }
     }
 
@@ -60,9 +60,9 @@ public class BookOwnerController {
     public Object deleteBookOwner(@PathVariable("id") Integer id){
         try {
             bookOwnerService.deleteBookOwner(id);
-            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+            return new ResponseEntity<>("Book-owner relation deleted successfully!",HttpStatus.ACCEPTED);
         }catch (Exception e){
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>("This book-owner relation does not exist!",HttpStatus.NO_CONTENT);
         }
     }
 }

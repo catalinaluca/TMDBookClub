@@ -27,7 +27,7 @@ public class UserController {
     public Object getUserById(@PathVariable("id") Long user_id){
             return userService.getUserById(user_id).isPresent()?
                         userService.getUserById(user_id).get():
-                            new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                            new ResponseEntity<>("This user does not exist!",HttpStatus.NO_CONTENT);
     }
 
     @RequestMapping(value = "/add",method = RequestMethod.POST)
@@ -35,7 +35,7 @@ public class UserController {
         try {
             return userService.addUser(user);
         }catch (Exception e){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -43,9 +43,9 @@ public class UserController {
     public Object deleteAllUsers(){
        try{
            userService.deleteAllUsers();
-           return new ResponseEntity<>(HttpStatus.ACCEPTED);
+           return new ResponseEntity<>("Users deleted successfully!",HttpStatus.ACCEPTED);
        }catch (Exception e){
-           return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+           return new ResponseEntity<>("This database does not contain any users!",HttpStatus.NO_CONTENT);
        }
     }
 
@@ -53,9 +53,9 @@ public class UserController {
     public Object deleteUser(@PathVariable("id") Long user_id){
         try{
             userService.deleteUser(user_id);
-            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+            return new ResponseEntity<>("User deleted successfully!",HttpStatus.ACCEPTED);
         }catch (Exception e){
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>("This user does not exist!",HttpStatus.NO_CONTENT);
         }
     }
 }

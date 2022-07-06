@@ -36,7 +36,7 @@ public class BookService {
         bookRepository.deleteAll();
     }
 
-    public List<Book> getAvailableBooks(){
+    public List<Object> getAvailableBooks(){
         return bookRepository.getAvailableBooks();
     }
 

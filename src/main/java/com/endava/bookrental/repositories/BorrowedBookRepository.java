@@ -14,7 +14,7 @@ import java.util.List;
 public interface BorrowedBookRepository extends JpaRepository<BorrowedBook,Integer> {
     @Query("select b from borrowed_books b where b.userId=:id")
     public BorrowedBook getBorrowedBooksForUserId(Integer id);
-    @Query("Select u.username,u.name,u.surname,b.title,b.author,bb.userId,bb.endDate FROM borrowed_books bb inner join book_owner bo on bb.bookOwnerId=bo.bookOwnerId inner join books b on bo.bookId=b.bookId inner join users u on bb.userId=u.userId where bo.ownerId=:ownerId")
+    @Query("Select u.username,u.name,u.surname,b.title,b.author,bb.userId,bb.endDate FROM book_owner bo left join books b on bo.bookId=b.bookId inner join users u on bo.ownerId=u.userId left join borrowed_books bb on bb.bookOwnerId=bo.bookOwnerId  where bo.ownerId=:ownerId")
     public List<Object> getOwnedBooks(Integer ownerId);
 
     @Query("SELECT b.isbn,b.title,b.author,bb.endDate FROM borrowed_books bb inner join book_owner bo on bb.bookOwnerId=bo.bookOwnerId left join books b on bo.bookId=b.bookId where bb.userId=:userId")
