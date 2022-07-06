@@ -37,6 +37,13 @@ public class BorrowedBookService {
         return borrowedBookRepository.save(borrowedBook);
     }
 
+    public BorrowedBook extendPeriod(Integer rentingId){
+        BorrowedBook borrowedBook=borrowedBookRepository.findById(rentingId).get();
+        borrowedBookRepository.deleteById(rentingId);
+        borrowedBook.setEndDate(Timestamp.valueOf(borrowedBook.getEndDate().toLocalDateTime().plusDays(14)));
+        return borrowedBookRepository.save(borrowedBook);
+    }
+
     public List<String> getBooksOwned(Integer ownerId){
         return borrowedBookRepository.getOwnedBooks(ownerId);
     }
