@@ -51,7 +51,12 @@ public class BorrowedBookController {
     }
 
     @RequestMapping(path = "/myBooks",method = RequestMethod.GET)
-    public List<String> getBooksOwned(@RequestParam(name = "ownerId") Integer ownerId){
+    public List<Object> getBooksOwned(@RequestParam(name = "ownerId") Integer ownerId){
         return borrowedBookService.getBooksOwned(ownerId);
+    }
+
+    @RequestMapping(path = "/rented",method = RequestMethod.GET)
+    public List<Object> getRentedBooks(@RequestParam(name = "userId") Integer userId){
+        return borrowedBookService.getRentedBooks(userId);
     }
 }

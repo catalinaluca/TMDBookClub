@@ -44,7 +44,11 @@ public class BorrowedBookService {
         return borrowedBookRepository.save(borrowedBook);
     }
 
-    public List<String> getBooksOwned(Integer ownerId){
+    public List<Object> getBooksOwned(Integer ownerId){
         return borrowedBookRepository.getOwnedBooks(ownerId);
+    }
+
+    public List<Object> getRentedBooks(Integer userId){
+        return borrowedBookRepository.getRentedBooks(userId);
     }
 }
