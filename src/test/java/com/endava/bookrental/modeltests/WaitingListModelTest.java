@@ -1,4 +1,4 @@
-package com.endava.bookrental;
+package com.endava.bookrental.modeltests;
 
 import com.endava.bookrental.models.WaitingList;
 import org.junit.jupiter.api.BeforeEach;
