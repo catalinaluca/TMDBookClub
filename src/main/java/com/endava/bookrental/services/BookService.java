@@ -1,5 +1,7 @@
 package com.endava.bookrental.services;
 
+import com.endava.bookrental.exceptions.BookNotFoundException;
+import com.endava.bookrental.exceptions.EmptyDatabaseException;
 import com.endava.bookrental.models.Book;
 import com.endava.bookrental.repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +16,23 @@ public class BookService {
     @Autowired
     private BookRepository bookRepository;
 
-    public List<Book> getAll() {
+    private void validateBook(Optional<Book> book) throws BookNotFoundException{
+        if(!book.isPresent())throw new BookNotFoundException();
+    }
+
+    private void validateNotEmptyDatabase() throws EmptyDatabaseException{
+        if(bookRepository.findAll().isEmpty())throw new EmptyDatabaseException();
+    }
+
+    public List<Book> getAll() throws EmptyDatabaseException{
+        validateNotEmptyDatabase();
         return bookRepository.findAll();
     }
 
-    public Optional<Book> getBookById(Integer id) {
-        return bookRepository.findById(id);
+    public Book getBookById(Integer id) throws BookNotFoundException{
+        Optional<Book> bookFound=bookRepository.findById(id);
+        validateBook(bookFound);
+        return bookFound.get();
     }
 
     public Book addBook(Book book){
@@ -28,19 +41,23 @@ public class BookService {
                         bookRepository.save(book);
     }
 
-    public void deleteBook(Integer id){
+    public void deleteBook(Integer id) throws BookNotFoundException{
+        validateBook(bookRepository.findById(id));
         bookRepository.deleteById(id);
     }
 
-    public void deleteAllBooks(){
+    public void deleteAllBooks()throws EmptyDatabaseException{
+        validateNotEmptyDatabase();
         bookRepository.deleteAll();
     }
 
-    public List<Object> getAvailableBooks(){
+    public List<Object> getAvailableBooks() throws EmptyDatabaseException{
+        validateNotEmptyDatabase();
         return bookRepository.getAvailableBooks();
     }
 
-    public List<Object> getBookByTitleOrAuthor(String  title, String  author){
+    public List<Object> getBookByTitleOrAuthor(String  title, String  author) throws EmptyDatabaseException{
+        validateNotEmptyDatabase();
         return bookRepository.getBookByTitleOrAuthor(title,author);
     }
 }
