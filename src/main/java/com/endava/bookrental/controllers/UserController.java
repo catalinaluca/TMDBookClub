@@ -1,5 +1,8 @@
 package com.endava.bookrental.controllers;
 
+import com.endava.bookrental.exceptions.UserNotFoundException;
+import com.endava.bookrental.exceptions.UsernameNullException;
+import com.endava.bookrental.exceptions.UsernameTakenException;
 import com.endava.bookrental.models.User;
 import com.endava.bookrental.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,16 +28,20 @@ public class UserController {
 
     @RequestMapping(path = "/{id}",method = RequestMethod.GET)
     public Object getUserById(@PathVariable("id") Long user_id){
-            return userService.getUserById(user_id).isPresent()?
-                        userService.getUserById(user_id).get():
-                            new ResponseEntity<>("This user does not exist!",HttpStatus.NO_CONTENT);
+            try {
+                return userService.getUserById(user_id);
+            }catch (UserNotFoundException e){
+                return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+            }
     }
 
     @RequestMapping(value = "/add",method = RequestMethod.POST)
     public Object addUser(@RequestBody User user){
         try {
             return userService.addUser(user);
-        }catch (Exception e){
+        }catch (UsernameNullException e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        }catch (UsernameTakenException e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
     }
