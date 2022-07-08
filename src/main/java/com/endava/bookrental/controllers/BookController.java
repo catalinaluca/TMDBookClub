@@ -30,8 +30,8 @@ public class BookController {
 
     }
 
-    @RequestMapping(path = "/{id}", method = RequestMethod.GET)
-    public Object getBookById(@PathVariable("id") Integer id) {
+    @RequestMapping(path = "/getBook", method = RequestMethod.GET)
+    public Object getBookById(@RequestParam(name = "bookId") Integer id) {
         try {
             return bookService.getBookById(id);
         } catch (BookNotFoundException e) {
@@ -50,8 +50,8 @@ public class BookController {
         }
     }
 
-    @RequestMapping(path = "/delete/{id}", method = RequestMethod.DELETE)
-    public Object deleteBook(@PathVariable("id") Integer id) {
+    @RequestMapping(path = "/delete/book", method = RequestMethod.DELETE)
+    public Object deleteBook(@RequestParam(name = "bookId") Integer id) {
         try {
             bookService.deleteBook(id);
             return new ResponseEntity<>("Book deleted successfully!", HttpStatus.ACCEPTED);
