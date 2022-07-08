@@ -1,17 +1,17 @@
 package com.endava.bookrental.controllers;
 
-import com.endava.bookrental.models.Book;
-import com.endava.bookrental.models.BorrowedBook;
+import com.endava.bookrental.exceptions.BookOwnerRelationNotFoundException;
+import com.endava.bookrental.exceptions.EmptyDatabaseException;
+import com.endava.bookrental.exceptions.RenterNotFoundException;
+import com.endava.bookrental.exceptions.UserNotFoundException;
+
 import com.endava.bookrental.services.BorrowedBookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/books/borrowed")
@@ -20,16 +20,27 @@ public class BorrowedBookController {
     private BorrowedBookService borrowedBookService;
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<BorrowedBook> getAllBorrowedBooks() {
-        return borrowedBookService.getAllBorrowedBooks();
+    public Object getAllBorrowedBooks() {
+        try {
+            return borrowedBookService.getAllBorrowedBooks();
+        } catch (EmptyDatabaseException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
     }
 
     @RequestMapping(path = "/{id}", method = RequestMethod.GET)
     public Object getBorrowedBooksForUserId(@PathVariable("id") Integer id) {
         try {
             return borrowedBookService.getBorrowedBooksForUserId(id);
+        } catch (UserNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
+        } catch (RenterNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
         } catch (Exception e) {
-            return new ResponseEntity<>("This user does not have any borrowed books!", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
     }
@@ -62,22 +73,40 @@ public class BorrowedBookController {
     }
 
     @RequestMapping(path = "/myBooks", method = RequestMethod.GET)
-    public List<Object> getBooksOwned(@RequestParam(name = "ownerId") Integer ownerId) {
-        List<Object> ownedList=borrowedBookService.getBooksOwned(ownerId);
-        if(!ownedList.isEmpty()){
-            return ownedList;
+    public Object getBooksOwned(@RequestParam(name = "ownerId") Integer ownerId) {
+        List<Object> ownedList = null;
+        try {
+            ownedList = borrowedBookService.getBooksOwned(ownerId);
+            if (!ownedList.isEmpty()) {
+                return ownedList;
+            }
+        } catch (UserNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
+        } catch (EmptyDatabaseException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
+        } catch (BookOwnerRelationNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-        ownedList.add(new ResponseEntity<>("This user does not own any books!",HttpStatus.BAD_REQUEST));
-        return ownedList;
+        return new ResponseEntity<>("This user does not own any books!", HttpStatus.BAD_REQUEST);
     }
 
     @RequestMapping(path = "/rented", method = RequestMethod.GET)
-    public List<Object> getRentedBooks(@RequestParam(name = "userId") Integer userId) {
-        List<Object> rentedList=borrowedBookService.getRentedBooks(userId);
-        if(!rentedList.isEmpty()){
-            return rentedList;
+    public Object getRentedBooks(@RequestParam(name = "userId") Integer userId) {
+        List<Object> rentedList = null;
+        try {
+            rentedList=borrowedBookService.getRentedBooks(userId);
+            if (!rentedList.isEmpty()) {
+                return rentedList;
+            }
+        }catch (RenterNotFoundException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
+        }catch (EmptyDatabaseException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-        rentedList.add(new ResponseEntity<>("This user has not rented any books!",HttpStatus.BAD_REQUEST));
-        return rentedList;
+        return new ResponseEntity<>("This user has not rented any books!", HttpStatus.BAD_REQUEST);
     }
 }
