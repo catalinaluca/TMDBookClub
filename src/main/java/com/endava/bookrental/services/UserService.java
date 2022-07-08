@@ -21,8 +21,8 @@ public class UserService {
         if(user.getUsername()==null ||user.getUsername().isEmpty() )throw new UsernameNullException();
     }
 
-    private void validateUser(User user) throws UserNotFoundException{
-        if(user.equals(null))throw new UserNotFoundException();
+    private void validateUser(Optional<User> user) throws UserNotFoundException{
+        if(!user.isPresent())throw new UserNotFoundException();
     }
 
     private void validateNotEmptyDatabase() throws EmptyDatabaseException{
@@ -37,10 +37,10 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public Optional<User> getUserById(Long user_id) throws UserNotFoundException{
+    public User getUserById(Long user_id) throws UserNotFoundException{
         Optional<User> user=userRepository.findById(user_id);
-        validateUser(user.get());
-        return user;
+        validateUser(user);
+        return user.get();
     }
 
     public User addUser(User user) throws UsernameNullException,UsernameTakenException{
@@ -55,7 +55,7 @@ public class UserService {
     }
     public void deleteUser(Long user_id) throws UserNotFoundException{
         Optional<User> user=userRepository.findById(user_id);
-        validateUser(user.get());
+        validateUser(user);
         userRepository.deleteById(user_id);
     }
 
