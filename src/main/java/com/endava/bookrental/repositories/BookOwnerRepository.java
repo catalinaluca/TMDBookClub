@@ -8,11 +8,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
+
 @Repository
-public interface BookOwnerRepository extends JpaRepository<BookOwner,Integer> {
+public interface BookOwnerRepository extends JpaRepository<BookOwner, Integer> {
     @Query("SELECT b FROM book_owner b where b.ownerId=:id")
-    public Optional<BookOwner> getBooksForOwner(Integer id);
+    public List<BookOwner> getBooksForOwner(Integer id);
 
     @Query("SELECT b FROM book_owner b where b.bookId=:id")
     public Optional<BookOwner> getOwnerForBook(Integer id);

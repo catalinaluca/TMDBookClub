@@ -1,8 +1,10 @@
 package com.endava.bookrental.services;
 
 import com.endava.bookrental.exceptions.BookNotFoundException;
+import com.endava.bookrental.exceptions.BookOwnerRelationNotFoundException;
 import com.endava.bookrental.exceptions.EmptyDatabaseException;
 import com.endava.bookrental.models.Book;
+import com.endava.bookrental.repositories.BookOwnerRepository;
 import com.endava.bookrental.repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,9 @@ import java.util.Optional;
 public class BookService {
     @Autowired
     private BookRepository bookRepository;
+
+    @Autowired
+    private BookOwnerRepository bookOwnerRepository;
 
     private void validateBook(Optional<Book> book) throws BookNotFoundException{
         if(!book.isPresent())throw new BookNotFoundException();
@@ -41,8 +46,11 @@ public class BookService {
                         bookRepository.save(book);
     }
 
-    public void deleteBook(Integer id) throws BookNotFoundException{
+    public void deleteBook(Integer id) throws BookNotFoundException, BookOwnerRelationNotFoundException {
         validateBook(bookRepository.findById(id));
+        if(bookOwnerRepository.getBookOwnerIdByBookId(id).isPresent()) {
+            bookOwnerRepository.deleteById(bookOwnerRepository.getBookOwnerIdByBookId(id).get());
+        }else throw new BookOwnerRelationNotFoundException();
         bookRepository.deleteById(id);
     }
 

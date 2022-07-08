@@ -1,5 +1,8 @@
 package com.endava.bookrental.services;
 
+import com.endava.bookrental.exceptions.BookNotFoundException;
+import com.endava.bookrental.exceptions.BookOwnerRelationNotFoundException;
+import com.endava.bookrental.exceptions.EmptyDatabaseException;
 import com.endava.bookrental.models.Book;
 import com.endava.bookrental.models.BookOwner;
 import com.endava.bookrental.models.User;
@@ -20,41 +23,51 @@ public class BookOwnerService {
 
     @Autowired
     private UserService userService;
-    public List<BookOwner> getAllBooksOwners(){
+
+    private void validateNotEmptyDatabase() throws EmptyDatabaseException {
+        if (bookOwnerRepository.findAll().isEmpty()) throw new EmptyDatabaseException();
+    }
+
+    private void validateBookOwner(Optional<BookOwner> bookOwner) throws BookOwnerRelationNotFoundException {
+        if (!bookOwner.isPresent()) throw new BookOwnerRelationNotFoundException();
+    }
+
+    public List<BookOwner> getAllBooksOwners() throws EmptyDatabaseException {
+        validateNotEmptyDatabase();
         return bookOwnerRepository.findAll();
     }
 
-    public Optional<BookOwner> getBooksForOwner(Integer id){
+    public List<BookOwner> getBooksForOwner(Integer id) {
         return bookOwnerRepository.getBooksForOwner(id);
     }
 
-    public Optional<BookOwner> getOwnerForBook(Integer id){
+    public Optional<BookOwner> getOwnerForBook(Integer id) {
         return bookOwnerRepository.getOwnerForBook(id);
     }
 
-    public Optional<Integer> getBookOwnerIdByBookId(Integer id){
+    public Optional<Integer> getBookOwnerIdByBookId(Integer id) {
         return bookOwnerRepository.getBookOwnerIdByBookId(id);
     }
 
-    public BookOwner addBookForOwner(Book book, Integer id){
+    public BookOwner addBookForOwner(Book book, Integer id) {
         bookService.addBook(book);
-        BookOwner bookOwner=new BookOwner();
+        BookOwner bookOwner = new BookOwner();
         bookOwner.setBookId(book.getBookId());
         bookOwner.setOwnerId(id);
         return bookOwnerRepository.save(bookOwner);
     }
 
-    public void deleteAll(){
+    public void deleteAll() throws EmptyDatabaseException {
+        validateNotEmptyDatabase();
         bookOwnerRepository.deleteAll();
     }
 
-    public void deleteBookOwner(Integer id) throws Exception{
-        Integer bookId=0;
-        if(bookOwnerRepository.findById(id).isPresent()){
-            bookId=bookOwnerRepository.findById(id).get().getBookId();
-            bookService.deleteBook(bookId);
+    public void deleteBookOwner(Integer id) throws BookNotFoundException, BookOwnerRelationNotFoundException {
+        if (bookOwnerRepository.findById(id).isPresent()) {
+            bookService.deleteBook(bookOwnerRepository.findById(id).get().getBookId());
+            validateBookOwner(bookOwnerRepository.findById(id));
             bookOwnerRepository.deleteById(id);
-        }else throw new Exception();
+        } else throw new BookNotFoundException();
 
     }
 }
