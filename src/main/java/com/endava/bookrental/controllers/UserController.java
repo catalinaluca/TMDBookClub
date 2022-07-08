@@ -1,5 +1,6 @@
 package com.endava.bookrental.controllers;
 
+import com.endava.bookrental.exceptions.EmptyDatabaseException;
 import com.endava.bookrental.exceptions.UserNotFoundException;
 import com.endava.bookrental.exceptions.UsernameNullException;
 import com.endava.bookrental.exceptions.UsernameTakenException;
@@ -22,17 +23,23 @@ public class UserController {
     private UserService userService;
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<User> getUsers(){
-        return userService.getUsers();
+    public Object getUsers(){
+        try {
+            return userService.getUsers();
+        }catch (EmptyDatabaseException e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.NO_CONTENT);
+        }
+
     }
 
-    @RequestMapping(path = "/{id}",method = RequestMethod.GET)
-    public Object getUserById(@PathVariable("id") Long user_id){
-            try {
-                return userService.getUserById(user_id);
-            }catch (UserNotFoundException e){
-                return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
-            }
+    @RequestMapping(path = "/user",method = RequestMethod.GET)
+    public Object getUserById(@RequestParam(name = "userId") Long user_id){
+        try {
+            return userService.getUserById(user_id);
+        }catch (UserNotFoundException e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        }
+
     }
 
     @RequestMapping(value = "/add",method = RequestMethod.POST)
@@ -51,8 +58,10 @@ public class UserController {
        try{
            userService.deleteAllUsers();
            return new ResponseEntity<>("Users deleted successfully!",HttpStatus.ACCEPTED);
+       }catch (EmptyDatabaseException e){
+           return new ResponseEntity<>(e.getMessage(),HttpStatus.NO_CONTENT);
        }catch (Exception e){
-           return new ResponseEntity<>("This database does not contain any users!",HttpStatus.NO_CONTENT);
+           return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
        }
     }
 

@@ -1,5 +1,6 @@
 package com.endava.bookrental.services;
 
+import com.endava.bookrental.exceptions.EmptyDatabaseException;
 import com.endava.bookrental.exceptions.UserNotFoundException;
 import com.endava.bookrental.exceptions.UsernameNullException;
 import com.endava.bookrental.exceptions.UsernameTakenException;
@@ -24,10 +25,15 @@ public class UserService {
         if(user.equals(null))throw new UserNotFoundException();
     }
 
+    private void validateNotEmptyDatabase() throws EmptyDatabaseException{
+        if(userRepository.findAll().isEmpty())throw new EmptyDatabaseException();
+    }
+
     private void validateUniqueUsername(String username) throws UsernameTakenException {
         if(userRepository.findByUsername(username).isPresent())throw new UsernameTakenException();
     }
-    public List<User> getUsers() {
+    public List<User> getUsers() throws EmptyDatabaseException{
+        validateNotEmptyDatabase();
         return userRepository.findAll();
     }
 
@@ -43,7 +49,8 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public void deleteAllUsers(){
+    public void deleteAllUsers() throws EmptyDatabaseException{
+        validateNotEmptyDatabase();
         userRepository.deleteAll();
     }
     public void deleteUser(Long user_id) throws UserNotFoundException{
