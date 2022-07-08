@@ -1,9 +1,6 @@
 package com.endava.bookrental.models;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity(name = "borrowed_books")
@@ -11,9 +8,13 @@ public class BorrowedBook {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer rentingId;
+    @Column(nullable = false)
     private Timestamp startDate;
+    @Column(nullable = false)
     private Timestamp endDate;
+    @Column(nullable = false)
     private Integer userId;
+    @Column(nullable = false)
     private Integer bookOwnerId;
 
     public Integer getRentingId() {

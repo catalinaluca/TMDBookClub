@@ -1,18 +1,15 @@
 package com.endava.bookrental.models;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity(name = "waiting_list")
 public class WaitingList {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer waitingId;
-
+    @Column(nullable = false)
     private Integer bookId;
-
+    @Column(nullable = false)
     private Integer waiterId;
 
 

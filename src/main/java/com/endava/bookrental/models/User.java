@@ -8,10 +8,14 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
+    @Column(nullable = false,unique = true)
     private String username;
+    @Column(nullable = false)
     private String email;
+
     private String name;
     private String surname;
+    @Column(nullable = false)
     private String encodedPassword;
 
     public User(){}

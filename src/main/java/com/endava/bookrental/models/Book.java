@@ -1,9 +1,6 @@
 package com.endava.bookrental.models;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.math.BigInteger;
 
 @Entity(name = "books")
@@ -11,8 +8,11 @@ public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer bookId;
+    @Column(nullable = false)
     private BigInteger isbn;
+    @Column(nullable = false)
     private String title;
+    @Column(nullable = false)
     private String author;
 
     public Book(){}
