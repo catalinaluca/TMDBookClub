@@ -42,7 +42,16 @@ public class BorrowedBookController {
         if (!getPeriods().contains(period)) {
             return new ResponseEntity<>("The period that you gave is not accepted!", HttpStatus.BAD_REQUEST);
         }
-        return borrowedBookService.borrowBook(userId, bookId, period);
+        try {
+            return borrowedBookService.borrowBook(userId, bookId, period);
+        }catch (UserNotFoundException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
+        }catch (BookNotFoundException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
+        }catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
     }
 
     @RequestMapping(path = "/extend", method = RequestMethod.POST)

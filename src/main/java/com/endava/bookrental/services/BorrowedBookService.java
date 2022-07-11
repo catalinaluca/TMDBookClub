@@ -34,7 +34,11 @@ public class BorrowedBookService {
     }
 
     private void validateBookIdInBorrowedBooks(Integer id) throws BookNotFoundException {
-        if(!borrowedBookRepository.getBookOwnerIdForBookId(id).isPresent())throw new BookNotFoundException();
+        if(!borrowedBookRepository.getBookOwnerIdForBookId(id).isPresent() ||!bookRepository.findAll().contains(id))throw new BookNotFoundException();
+    }
+
+    private void validateUser(Integer userId) throws UserNotFoundException {
+        if(!bookRepository.findAll().contains(userId))throw new UserNotFoundException();
     }
 
     public List<BorrowedBook> getAllBorrowedBooks() throws EmptyDatabaseException {
@@ -43,7 +47,9 @@ public class BorrowedBookService {
     }
 
 
-    public BorrowedBook borrowBook(Integer userId, Integer bookId, Integer period) {
+    public BorrowedBook borrowBook(Integer userId, Integer bookId, Integer period) throws BookNotFoundException, UserNotFoundException {
+        validateBookIdInBorrowedBooks(bookId);
+        validateUser(userId);
         BorrowedBook borrowedBook = new BorrowedBook();
         borrowedBook.setUserId(userId);
         borrowedBook.setBookOwnerId(bookOwnerService.getBookOwnerIdByBookId(bookId).get());
