@@ -38,13 +38,6 @@ public class BorrowedBookService {
         return borrowedBookRepository.findAll();
     }
 
-    public List<BorrowedBook> getBorrowedBooksForUserId(Integer id) throws EmptyDatabaseException, UserNotFoundException, RenterNotFoundException {
-        validateNotEmptyDatabase();
-        if (!userRepository.findById(Long.valueOf(id)).isPresent()) throw new UserNotFoundException();
-        List<BorrowedBook> borrowedBookList = borrowedBookRepository.getBorrowedBooksForUserId(id);
-        if (borrowedBookList.isEmpty()) throw new RenterNotFoundException();
-        return borrowedBookList;
-    }
 
     public BorrowedBook borrowBook(Integer userId, Integer bookId, Integer period) {
         BorrowedBook borrowedBook = new BorrowedBook();
@@ -62,7 +55,7 @@ public class BorrowedBookService {
         return borrowedBookRepository.save(borrowedBook);
     }
 
-    public List<Object> getBooksOwned(Integer ownerId) throws EmptyDatabaseException, UserNotFoundException, BookOwnerRelationNotFoundException {
+    public List<Object> getOwnedBooks(Integer ownerId) throws EmptyDatabaseException, UserNotFoundException, BookOwnerRelationNotFoundException {
         validateNotEmptyDatabase();
         if (!userRepository.findById(Long.valueOf(ownerId)).isPresent()) throw new UserNotFoundException();
         List<Object> ownedBooks = borrowedBookRepository.getOwnedBooks(ownerId);

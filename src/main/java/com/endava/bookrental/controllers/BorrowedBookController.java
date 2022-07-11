@@ -31,20 +31,6 @@ public class BorrowedBookController {
 
     }
 
-    @RequestMapping(path = "/{id}", method = RequestMethod.GET)
-    public Object getBorrowedBooksForUserId(@PathVariable("id") Integer id) {
-        try {
-            return borrowedBookService.getBorrowedBooksForUserId(id);
-        } catch (UserNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
-        } catch (RenterNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-
-    }
-
     public List<Integer> getPeriods() {
         List<Integer> periods = new ArrayList<>();
         periods.add(7);
@@ -73,10 +59,10 @@ public class BorrowedBookController {
     }
 
     @RequestMapping(path = "/myBooks", method = RequestMethod.GET)
-    public Object getBooksOwned(@RequestParam(name = "ownerId") Integer ownerId) {
+    public Object getOwnedBooks(@RequestParam(name = "ownerId") Integer ownerId) {
         List<Object> ownedList = null;
         try {
-            ownedList = borrowedBookService.getBooksOwned(ownerId);
+            ownedList = borrowedBookService.getOwnedBooks(ownerId);
             if (!ownedList.isEmpty()) {
                 return ownedList;
             }
