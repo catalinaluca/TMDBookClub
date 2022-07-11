@@ -1,5 +1,8 @@
 package com.endava.bookrental.controllers;
 
+import com.endava.bookrental.exceptions.BookNotFoundException;
+import com.endava.bookrental.exceptions.BorrowedBookNotFoundException;
+import com.endava.bookrental.exceptions.UserNotFoundException;
 import com.endava.bookrental.services.WaitingListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,8 +22,14 @@ public class WaitingListController {
     public Object addWaiter(@RequestParam(name = "userId") Integer userId,@RequestParam(name = "bookId") Integer bookId){
        try{
            return waitingListService.addWaiter(userId,bookId);
+       }catch (UserNotFoundException e){
+           return new ResponseEntity<>(e.getMessage(),HttpStatus.NO_CONTENT);
+       }catch (BookNotFoundException e){
+           return new ResponseEntity<>(e.getMessage(),HttpStatus.NO_CONTENT);
+       }catch (BorrowedBookNotFoundException e){
+           return new ResponseEntity<>("This book is available for renting.",HttpStatus.NO_CONTENT);
        }catch (Exception e){
-           return new ResponseEntity<>("This book is either available for renting or non-existent.",HttpStatus.BAD_REQUEST);
+           return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
        }
     }
 }
