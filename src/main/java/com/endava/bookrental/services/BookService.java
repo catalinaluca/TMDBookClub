@@ -6,10 +6,11 @@ import com.endava.bookrental.exceptions.EmptyDatabaseException;
 import com.endava.bookrental.models.Book;
 import com.endava.bookrental.repositories.BookOwnerRepository;
 import com.endava.bookrental.repositories.BookRepository;
+import com.endava.bookrental.repositories.BorrowedBookRepository;
+import com.endava.bookrental.repositories.WaitingListRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +21,12 @@ public class BookService {
 
     @Autowired
     private BookOwnerRepository bookOwnerRepository;
+
+    @Autowired
+    private BorrowedBookRepository borrowedBookRepository;
+
+    @Autowired
+    private WaitingListRepository waitingListRepository;
 
     private void validateBook(Optional<Book> book) throws BookNotFoundException{
         if(!book.isPresent())throw new BookNotFoundException();
@@ -51,11 +58,21 @@ public class BookService {
         if(bookOwnerRepository.getBookOwnerIdByBookId(id).isPresent()) {
             bookOwnerRepository.deleteById(bookOwnerRepository.getBookOwnerIdByBookId(id).get());
         }else throw new BookOwnerRelationNotFoundException();
+        Integer bookOwnerId=bookOwnerRepository.getBookOwnerIdByBookId(id).get();
+        if(borrowedBookRepository.findBorrowedBookByBookOwnerId(bookOwnerId).isPresent()){
+            borrowedBookRepository.deleteById(borrowedBookRepository.findBorrowedBookByBookOwnerId(bookOwnerId).get().getBookOwnerId());
+        }
+        if(waitingListRepository.findWaitingListByBookId(id).isPresent()){
+            waitingListRepository.deleteById(waitingListRepository.findWaitingListByBookId(id).get().getWaitingId());
+        }
         bookRepository.deleteById(id);
     }
 
     public void deleteAllBooks()throws EmptyDatabaseException{
         validateNotEmptyDatabase();
+        borrowedBookRepository.deleteAll();
+        bookOwnerRepository.deleteAll();
+        waitingListRepository.deleteAll();
         bookRepository.deleteAll();
     }
 

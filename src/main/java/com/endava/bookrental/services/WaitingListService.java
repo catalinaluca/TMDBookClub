@@ -1,8 +1,6 @@
 package com.endava.bookrental.services;
 
-import com.endava.bookrental.exceptions.BookNotFoundException;
-import com.endava.bookrental.exceptions.BorrowedBookNotFoundException;
-import com.endava.bookrental.exceptions.UserNotFoundException;
+import com.endava.bookrental.exceptions.*;
 import com.endava.bookrental.models.WaitingList;
 import com.endava.bookrental.repositories.BookRepository;
 import com.endava.bookrental.repositories.BorrowedBookRepository;
@@ -10,6 +8,8 @@ import com.endava.bookrental.repositories.UserRepository;
 import com.endava.bookrental.repositories.WaitingListRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class WaitingListService {
@@ -28,9 +28,16 @@ public class WaitingListService {
         if(!userRepository.findAll().contains(Long.valueOf(userId)))throw new UserNotFoundException();
     }
 
+    private void validateWaiterId(Integer waiterId) throws WaiterNotFoundException {
+        if(!waitingListRepository.findAll().contains(waiterId))throw new WaiterNotFoundException();
+    }
     private void validateBook(Integer bookId) throws BorrowedBookNotFoundException, BookNotFoundException {
         if(!bookRepository.findAll().contains(bookId))throw new BookNotFoundException();
         if(!borrowedBookRepository.findAll().contains(bookId))throw new BorrowedBookNotFoundException();
+    }
+
+    private void validateNotEmptyDatabase() throws EmptyDatabaseException{
+        if(waitingListRepository.findAll().isEmpty())throw new EmptyDatabaseException();
     }
     public Object addWaiter(Integer userId,Integer bookId) throws UserNotFoundException, BorrowedBookNotFoundException, BookNotFoundException {
         validateUser(userId);
@@ -39,5 +46,20 @@ public class WaitingListService {
         waitingList.setWaiterId(userId);
         waitingList.setBookId(bookId);
         return waitingListRepository.save(waitingList);
+    }
+
+    public List<WaitingList> getAllWaiters() throws EmptyDatabaseException {
+        validateNotEmptyDatabase();
+        return waitingListRepository.findAll();
+    }
+
+    public void deleteAllWaiters() throws EmptyDatabaseException {
+        validateNotEmptyDatabase();
+        waitingListRepository.deleteAll();
+    }
+
+    public void deleteWaiterWithId(Integer id) throws WaiterNotFoundException{
+        validateWaiterId(id);
+        waitingListRepository.deleteById(id);
     }
 }

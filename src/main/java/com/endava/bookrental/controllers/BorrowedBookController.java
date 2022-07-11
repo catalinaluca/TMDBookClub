@@ -1,9 +1,6 @@
 package com.endava.bookrental.controllers;
 
-import com.endava.bookrental.exceptions.BookOwnerRelationNotFoundException;
-import com.endava.bookrental.exceptions.EmptyDatabaseException;
-import com.endava.bookrental.exceptions.RenterNotFoundException;
-import com.endava.bookrental.exceptions.UserNotFoundException;
+import com.endava.bookrental.exceptions.*;
 
 import com.endava.bookrental.services.BorrowedBookService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,5 +91,29 @@ public class BorrowedBookController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>("This user has not rented any books!", HttpStatus.BAD_REQUEST);
+    }
+
+    @RequestMapping(path = "/delete",method = RequestMethod.DELETE)
+    public Object deleteAllBorrowedBooks(){
+        try {
+            borrowedBookService.deleteAllBorrowedBooks();
+            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        }catch (EmptyDatabaseException e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.NO_CONTENT);
+        }catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(path = "/delete/book",method = RequestMethod.DELETE)
+    public Object deleteBorrowedBookWithBookId(@RequestParam(name = "bookId") Integer bookId){
+        try {
+            borrowedBookService.deleteBookWithBookId(bookId);
+            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        }catch (BookNotFoundException e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.NO_CONTENT);
+        }catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        }
     }
 }

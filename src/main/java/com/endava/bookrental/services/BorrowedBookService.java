@@ -33,6 +33,10 @@ public class BorrowedBookService {
         if (borrowedBookRepository.findAll().isEmpty()) throw new EmptyDatabaseException();
     }
 
+    private void validateBookIdInBorrowedBooks(Integer id) throws BookNotFoundException {
+        if(!borrowedBookRepository.getBookOwnerIdForBookId(id).isPresent())throw new BookNotFoundException();
+    }
+
     public List<BorrowedBook> getAllBorrowedBooks() throws EmptyDatabaseException {
         validateNotEmptyDatabase();
         return borrowedBookRepository.findAll();
@@ -68,5 +72,15 @@ public class BorrowedBookService {
         List<Object> borrowedBooks= borrowedBookRepository.getRentedBooks(userId);
         if(borrowedBooks.isEmpty())throw new RenterNotFoundException();
         return borrowedBooks;
+    }
+
+    public void deleteAllBorrowedBooks() throws EmptyDatabaseException {
+        validateNotEmptyDatabase();
+        borrowedBookRepository.deleteAll();
+    }
+
+    public void deleteBookWithBookId(Integer id) throws BookNotFoundException {
+        validateBookIdInBorrowedBooks(id);
+        borrowedBookRepository.deleteById(borrowedBookRepository.getBookOwnerIdForBookId(id).get());
     }
 }
