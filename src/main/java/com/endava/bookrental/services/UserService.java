@@ -19,10 +19,6 @@ public class UserService {
     @Autowired
     private BookOwnerService bookOwnerService;
 
-    @Autowired
-    private WaitingListService waitingListService;
-
-
     private void validateUsername(User user) throws UsernameNullException{
         if(user.getUsername()==null ||user.getUsername().isEmpty() )throw new UsernameNullException();
     }
