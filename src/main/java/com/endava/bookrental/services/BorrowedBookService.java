@@ -34,7 +34,7 @@ public class BorrowedBookService {
     }
 
     private void validateBookIdInBorrowedBooks(Integer id) throws BookNotFoundException {
-        if(!borrowedBookRepository.getBookOwnerIdForBookId(id).isPresent() ||!bookRepository.findAll().contains(id))throw new BookNotFoundException();
+        if(borrowedBookRepository.getBookOwnerIdForBookId(id).isPresent() ||!bookRepository.findAll().contains(id))throw new BookNotFoundException();
     }
 
     private void validateUser(Integer userId) throws UserNotFoundException {

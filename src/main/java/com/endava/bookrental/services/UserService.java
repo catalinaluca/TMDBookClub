@@ -1,11 +1,10 @@
 package com.endava.bookrental.services;
 
-import com.endava.bookrental.exceptions.EmptyDatabaseException;
-import com.endava.bookrental.exceptions.UserNotFoundException;
-import com.endava.bookrental.exceptions.UsernameNullException;
-import com.endava.bookrental.exceptions.UsernameTakenException;
+import com.endava.bookrental.exceptions.*;
 import com.endava.bookrental.models.User;
+import com.endava.bookrental.repositories.BookOwnerRepository;
 import com.endava.bookrental.repositories.UserRepository;
+import com.endava.bookrental.repositories.WaitingListRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +15,13 @@ import java.util.Optional;
 public class UserService {
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private BookOwnerService bookOwnerService;
+
+    @Autowired
+    private WaitingListService waitingListService;
+
 
     private void validateUsername(User user) throws UsernameNullException{
         if(user.getUsername()==null ||user.getUsername().isEmpty() )throw new UsernameNullException();
@@ -51,11 +57,13 @@ public class UserService {
 
     public void deleteAllUsers() throws EmptyDatabaseException{
         validateNotEmptyDatabase();
+        bookOwnerService.deleteAll();
         userRepository.deleteAll();
     }
-    public void deleteUser(Long user_id) throws UserNotFoundException{
+    public void deleteUser(Long user_id) throws UserNotFoundException, BookOwnerRelationNotFoundException, BookNotFoundException, WaiterNotFoundException {
         Optional<User> user=userRepository.findById(user_id);
         validateUser(user);
+        bookOwnerService.deleteBookOwner(bookOwnerService.getBookOwnerIdByUserId(user_id).get());
         userRepository.deleteById(user_id);
     }
 
