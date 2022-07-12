@@ -60,14 +60,10 @@ class UserServiceTest {
 
     @Test
     public void throwsUsernameTakenException(){
-      //  when(userRepository.findById(1L).get().getUsername()).thenReturn("user");
         User user=new User();
-        user.setUser_id(1L);
         user.setUsername("user");
-
-            when(userRepository.save(user)).thenReturn(user);
-            assertThrows(UsernameTakenException.class,()->userService.addUser(user));
-
+        when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
+        assertThrows(UsernameTakenException.class,()->userService.addUser(user));
     }
 
     @AfterEach
