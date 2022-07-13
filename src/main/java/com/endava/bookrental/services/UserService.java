@@ -56,7 +56,7 @@ public class UserService {
         bookOwnerService.deleteAll();
         userRepository.deleteAll();
     }
-    public void deleteUser(Long user_id) throws UserNotFoundException, BookOwnerRelationNotFoundException, BookNotFoundException, WaiterNotFoundException {
+    public void deleteUser(Long user_id) throws UserNotFoundException, BookOwnerRelationNotFoundException, BookNotFoundException{
         Optional<User> user=userRepository.findById(user_id);
         validateUser(user);
         bookOwnerService.deleteBookOwner(bookOwnerService.getBookOwnerIdByUserId(user_id).get());
