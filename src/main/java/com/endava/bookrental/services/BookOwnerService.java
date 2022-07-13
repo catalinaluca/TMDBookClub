@@ -64,9 +64,7 @@ public class BookOwnerService {
     public void deleteBookOwner(Integer id) throws BookNotFoundException, BookOwnerRelationNotFoundException {
         if (bookOwnerRepository.findById(id).isPresent()) {
             bookService.deleteBook(bookOwnerRepository.findById(id).get().getBookId());
-            validateBookOwner(bookOwnerRepository.findById(id));
-        } else throw new BookNotFoundException();
-
+        } else throw new BookOwnerRelationNotFoundException();
     }
 }
 

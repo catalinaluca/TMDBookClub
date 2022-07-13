@@ -34,11 +34,15 @@ public class BorrowedBookService {
     }
 
     private void validateBookIdInBorrowedBooks(Integer id) throws BookNotFoundException {
-        if(borrowedBookRepository.getBookOwnerIdForBookId(id).isPresent() ||!bookRepository.findAll().contains(id))throw new BookNotFoundException();
+        if(!borrowedBookRepository.findById(borrowedBookRepository.findBorrowedBookByBookOwnerId(id).get().getBookOwnerId()).isPresent())throw new BookNotFoundException();
+    }
+
+    private void validateBookInBooks(Integer id) throws BookNotFoundException{
+        if(!bookRepository.findById(id).isPresent())throw new BookNotFoundException();
     }
 
     private void validateUser(Integer userId) throws UserNotFoundException {
-        if(!bookRepository.findAll().contains(userId))throw new UserNotFoundException();
+        if(!userRepository.findById(Long.valueOf(userId)).isPresent())throw new UserNotFoundException();
     }
 
     public List<BorrowedBook> getAllBorrowedBooks() throws EmptyDatabaseException {
@@ -47,14 +51,15 @@ public class BorrowedBookService {
     }
 
 
-    public BorrowedBook borrowBook(Integer userId, Integer bookId, Integer period) throws BookNotFoundException, UserNotFoundException {
-        validateBookIdInBorrowedBooks(bookId);
+    public BorrowedBook borrowBook(Integer userId, Integer bookId, Integer period) throws BookNotFoundException, UserNotFoundException,IllegalArgumentException {
+        validateBookInBooks(bookId);
         validateUser(userId);
         BorrowedBook borrowedBook = new BorrowedBook();
         borrowedBook.setUserId(userId);
         borrowedBook.setBookOwnerId(bookOwnerService.getBookOwnerIdByBookId(bookId).get());
         borrowedBook.setStartDate(Timestamp.valueOf(LocalDateTime.now()));
         borrowedBook.setEndDate(Timestamp.valueOf(LocalDateTime.now().plusDays(period)));
+        if (borrowedBookRepository.findById(borrowedBook.getBookOwnerId()).isPresent())throw new IllegalArgumentException();
         return borrowedBookRepository.save(borrowedBook);
     }
 
@@ -86,6 +91,7 @@ public class BorrowedBookService {
     }
 
     public void deleteBookWithBookId(Integer id) throws BookNotFoundException {
+        validateBookInBooks(id);
         validateBookIdInBorrowedBooks(id);
         borrowedBookRepository.deleteById(borrowedBookRepository.getBookOwnerIdForBookId(id).get());
     }
