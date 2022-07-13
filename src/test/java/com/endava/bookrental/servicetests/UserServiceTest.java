@@ -8,20 +8,18 @@ import com.endava.bookrental.models.User;
 import com.endava.bookrental.repositories.UserRepository;
 import com.endava.bookrental.services.BookOwnerService;
 import com.endava.bookrental.services.UserService;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -35,39 +33,41 @@ class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
-
+    private User user;
     @BeforeEach
     void setUp() {
+        user=new User();
+        user.setUsername("user1");
+        user.setUser_id(1L);
+        user.setSurname("user");
+        user.setName("user");
+        user.setEmail("user@gmail.com");
+        user.setEncodedPassword("userPass12");
     }
 
     @Test
-    public void throwsEmptyDatabaseException(){
+    public void shouldThrowEmptyDatabaseException(){
         when(userRepository.findAll()).thenReturn(Collections.emptyList());
         assertThrows(EmptyDatabaseException.class,()->userService.getUsers());
+        assertThrows(EmptyDatabaseException.class,()->userService.deleteAllUsers());
     }
 
     @Test
-    public void throwsUserNotFoundException(){
+    public void shouldThrowUserNotFoundException(){
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
         assertThrows(UserNotFoundException.class,()->userService.getUserById(1L));
     }
 
     @Test
-    public void throwsUsernameNullException(){
-        User user=new User();
+    public void shouldThrowUsernameNullException(){
+        user.setUsername("");
         assertThrows(UsernameNullException.class,()->userService.addUser(user));
     }
 
     @Test
-    public void throwsUsernameTakenException(){
-        User user=new User();
-        user.setUsername("user");
-        when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
+    public void shouldThrowUsernameTakenException(){
+        when(userRepository.findByUsername("user1")).thenReturn(Optional.of(user));
         assertThrows(UsernameTakenException.class,()->userService.addUser(user));
-    }
-
-    @AfterEach
-    void tearDown() {
     }
 
 }
