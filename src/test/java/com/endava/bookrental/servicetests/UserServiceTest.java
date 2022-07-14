@@ -51,6 +51,7 @@ class UserServiceTest {
     public void shouldThrowUserNotFoundException(){
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
         assertThrows(UserNotFoundException.class,()->userService.getUserById(1L));
+        assertThrows(UserNotFoundException.class,()->userService.deleteUser(1L));
     }
 
     @Test
