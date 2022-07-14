@@ -4,6 +4,7 @@ import com.endava.bookrental.exceptions.BookNotFoundException;
 import com.endava.bookrental.exceptions.BookOwnerRelationNotFoundException;
 import com.endava.bookrental.exceptions.EmptyDatabaseException;
 import com.endava.bookrental.models.Book;
+import com.endava.bookrental.prototypes.BookPrototype;
 import com.endava.bookrental.repositories.BookOwnerRepository;
 import com.endava.bookrental.repositories.BookRepository;
 import com.endava.bookrental.repositories.BorrowedBookRepository;
@@ -46,11 +47,7 @@ class BookServiceTest {
 
     @BeforeEach
     void setUp(){
-        book=new Book();
-        book.setIsbn(BigInteger.valueOf(123546798));
-        book.setAuthor("author");
-        book.setTitle("title");
-        book.setBookId(1);
+        book= BookPrototype.getBookPrototype();
     }
 
     @Test

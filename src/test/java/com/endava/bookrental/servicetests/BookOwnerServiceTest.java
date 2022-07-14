@@ -4,6 +4,7 @@ import com.endava.bookrental.exceptions.BookNotFoundException;
 import com.endava.bookrental.exceptions.BookOwnerRelationNotFoundException;
 import com.endava.bookrental.exceptions.EmptyDatabaseException;
 import com.endava.bookrental.models.BookOwner;
+import com.endava.bookrental.prototypes.BookOwnerPrototype;
 import com.endava.bookrental.repositories.BookOwnerRepository;
 import com.endava.bookrental.repositories.BookRepository;
 import com.endava.bookrental.services.BookOwnerService;
@@ -37,10 +38,7 @@ class BookOwnerServiceTest {
 
     @BeforeEach
     void setUp(){
-        bookOwner=new BookOwner();
-        bookOwner.setOwnerId(1);
-        bookOwner.setBookId(1);
-        bookOwner.setBookOwnerId(1);
+        bookOwner= BookOwnerPrototype.getBookOwnerPrototype();
     }
 
     @Test

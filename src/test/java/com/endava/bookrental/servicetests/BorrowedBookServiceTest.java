@@ -5,6 +5,10 @@ import com.endava.bookrental.models.Book;
 import com.endava.bookrental.models.BookOwner;
 import com.endava.bookrental.models.BorrowedBook;
 import com.endava.bookrental.models.User;
+import com.endava.bookrental.prototypes.BookOwnerPrototype;
+import com.endava.bookrental.prototypes.BookPrototype;
+import com.endava.bookrental.prototypes.BorrowedBookPrototype;
+import com.endava.bookrental.prototypes.UserPrototype;
 import com.endava.bookrental.repositories.BookOwnerRepository;
 import com.endava.bookrental.repositories.BookRepository;
 import com.endava.bookrental.repositories.BorrowedBookRepository;
@@ -58,28 +62,10 @@ class BorrowedBookServiceTest {
 
     @BeforeEach
     void setUp(){
-        book=new Book();
-        book.setBookId(1);
-        book.setTitle("title");
-        book.setAuthor("author");
-        book.setIsbn(BigInteger.valueOf(1234568));
-        user=new User();
-        user.setUsername("user");
-        user.setUser_id(1L);
-        user.setEncodedPassword("userPass");
-        user.setEmail("user@gmail.com");
-        user.setSurname("user");
-        user.setName("user");
-        bookOwner=new BookOwner();
-        bookOwner.setBookId(1);
-        bookOwner.setOwnerId(1);
-        bookOwner.setBookOwnerId(1);
-        borrowedBook=new BorrowedBook();
-        borrowedBook.setBookOwnerId(1);
-        borrowedBook.setUserId(1);
-        borrowedBook.setRentingId(1);
-        borrowedBook.setStartDate(Timestamp.valueOf(LocalDateTime.of(2022,11,2,23,43)));
-        borrowedBook.setEndDate(Timestamp.valueOf(LocalDateTime.of(2022,11,2,23,43).plusDays(7)));
+        book= BookPrototype.getBookPrototype();
+        user= UserPrototype.getUserPrototype();
+        bookOwner= BookOwnerPrototype.getBookOwnerPrototype();
+        borrowedBook= BorrowedBookPrototype.getBorrowedBookPrototype();
     }
 
     @Test

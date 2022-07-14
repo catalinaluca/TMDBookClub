@@ -5,6 +5,7 @@ import com.endava.bookrental.exceptions.UserNotFoundException;
 import com.endava.bookrental.exceptions.UsernameNullException;
 import com.endava.bookrental.exceptions.UsernameTakenException;
 import com.endava.bookrental.models.User;
+import com.endava.bookrental.prototypes.UserPrototype;
 import com.endava.bookrental.repositories.UserRepository;
 import com.endava.bookrental.services.BookOwnerService;
 import com.endava.bookrental.services.UserService;
@@ -36,13 +37,7 @@ class UserServiceTest {
     private User user;
     @BeforeEach
     void setUp() {
-        user=new User();
-        user.setUsername("user1");
-        user.setUser_id(1L);
-        user.setSurname("user");
-        user.setName("user");
-        user.setEmail("user@gmail.com");
-        user.setEncodedPassword("userPass12");
+        user= UserPrototype.getUserPrototype();
     }
 
     @Test
@@ -66,7 +61,7 @@ class UserServiceTest {
 
     @Test
     public void shouldThrowUsernameTakenException(){
-        when(userRepository.findByUsername("user1")).thenReturn(Optional.of(user));
+        when(userRepository.findByUsername("yonpop12")).thenReturn(Optional.of(user));
         assertThrows(UsernameTakenException.class,()->userService.addUser(user));
     }
 
