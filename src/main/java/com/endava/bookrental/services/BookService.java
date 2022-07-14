@@ -55,6 +55,7 @@ public class BookService {
 
     public void deleteBook(Integer id) throws BookNotFoundException, BookOwnerRelationNotFoundException {
         validateBook(bookRepository.findById(id));
+        bookRepository.deleteById(id);
         if(bookOwnerRepository.getBookOwnerIdByBookId(id).isPresent()) {
             bookOwnerRepository.deleteById(bookOwnerRepository.getBookOwnerIdByBookId(id).get());
         }else throw new BookOwnerRelationNotFoundException();
@@ -65,7 +66,6 @@ public class BookService {
         if(waitingListRepository.findWaitingListByBookId(id).isPresent()){
             waitingListRepository.deleteById(waitingListRepository.findWaitingListByBookId(id).get().getWaitingId());
         }
-        bookRepository.deleteById(id);
     }
 
     public void deleteAllBooks()throws EmptyDatabaseException{

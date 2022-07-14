@@ -65,4 +65,10 @@ class BookServiceTest {
         assertThrows(BookNotFoundException.class,()->bookService.getBookById(1));
         assertThrows(BookNotFoundException.class,()->bookService.deleteBook(1));
     }
+
+    @Test
+    public void shouldThrowBookOwnerNotFoundException(){
+        when(bookRepository.findById(1)).thenReturn(Optional.of(book));
+        assertThrows(BookOwnerRelationNotFoundException.class,()->bookService.deleteBook(1));
+    }
 }
