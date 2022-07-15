@@ -2,6 +2,7 @@ package com.endava.bookrental.repositories;
 
 import com.endava.bookrental.models.Book;
 import com.endava.bookrental.models.BookOwner;
+import org.hibernate.sql.Select;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -19,12 +20,13 @@ public interface BookOwnerRepository extends JpaRepository<BookOwner, Integer> {
     @Query("SELECT b FROM book_owner b where b.bookId=:id")
     public Optional<BookOwner> getOwnerForBook(Integer id);
 
-    public Optional<Integer> getBookOwnerByBookId(Integer bookId);
+    public Optional<BookOwner> getBookOwnerByBookId(Integer bookId);
 
-    @Query("select bo.bookOwnerId from book_owner bo where bo.bookId=:bookId")
-    public Optional<Integer> getBookOwnerIdByBookId(Integer bookId);
-    @Query("select bo.bookOwnerId from book_owner bo where bo.ownerId=:userId")
-    public List<Integer> getBookOwnerIdByUserId(Integer userId);
+
+    public List<Optional<BookOwner>> getBookOwnerByOwnerId(Integer ownerId);
+
+    @Query("SELECT b from books b inner join book_owner bo on b.bookId=bo.bookId where bo.bookOwnerId=:bookOnwerId")
+    public Optional<Book> getBookByBookOwnerId(Integer bookOwnerId);
 
     public void deleteBookOwnerByOwnerId(Integer userId);
  }

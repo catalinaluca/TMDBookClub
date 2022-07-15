@@ -60,15 +60,7 @@ public class UserService {
         Optional<User> user=userRepository.findById(user_id);
         validateUser(user);
         try {
-            bookOwnerService.getBookOwnerIdByUserId(user_id).forEach(e-> {
-                try {
-                    bookOwnerService.deleteBookOwner(e);
-                } catch (BookNotFoundException ex) {
-                    throw new RuntimeException(ex);
-                } catch (BookOwnerRelationNotFoundException ex) {
-                    throw new RuntimeException(ex);
-                }
-            });
+            bookOwnerService.getBookOwnerIdByUserId(user_id);
             userRepository.deleteById(user_id);
         } catch (Exception ignored) {}
 

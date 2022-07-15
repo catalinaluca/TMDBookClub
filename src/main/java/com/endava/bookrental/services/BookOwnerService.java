@@ -25,7 +25,7 @@ public class BookOwnerService {
     }
 
     private void validateBookOwner(Optional<BookOwner> bookOwner) throws BookOwnerRelationNotFoundException {
-        if (!bookOwner.isPresent()) throw new BookOwnerRelationNotFoundException();
+        if (bookOwner.isEmpty()) throw new BookOwnerRelationNotFoundException();
     }
 
     public List<BookOwner> getAllBooksOwners() throws EmptyDatabaseException {
@@ -43,14 +43,18 @@ public class BookOwnerService {
         return bookOwnerRepository.getOwnerForBook(id);
     }
 
-    public Optional<Integer> getBookOwnerIdByBookId(Integer id) throws EmptyDatabaseException {
+    public Integer getBookOwnerIdByBookId(Integer id) throws EmptyDatabaseException, BookOwnerRelationNotFoundException {
         validateNotEmptyDatabase();
-        return bookOwnerRepository.getBookOwnerIdByBookId(id);
+        Optional<BookOwner> bookOwner=bookOwnerRepository.getBookOwnerByBookId(id);
+        validateBookOwner(bookOwner);
+        return bookOwner.get().getBookOwnerId();
     }
 
-    public List<Integer> getBookOwnerIdByUserId(Long userId) throws EmptyDatabaseException {
+    public Integer getBookOwnerIdByUserId(Long userId) throws EmptyDatabaseException, BookOwnerRelationNotFoundException {
         validateNotEmptyDatabase();
-        return bookOwnerRepository.getBookOwnerIdByUserId(Math.toIntExact(userId));
+        List<Optional<BookOwner>> bookOwnerList=bookOwnerRepository.getBookOwnerByOwnerId(Math.toIntExact(userId));
+        validateBookOwner(bookOwnerList.get(0));
+        return bookOwnerList.get(0).get().getBookOwnerId();
     }
     public BookOwner addBookForOwner(Book book, Integer id){
         bookService.addBook(book);
@@ -58,6 +62,11 @@ public class BookOwnerService {
         bookOwner.setBookId(book.getBookId());
         bookOwner.setOwnerId(id);
         return bookOwnerRepository.save(bookOwner);
+    }
+
+    public Optional<Book> getBookByBookOwnerId(Integer bookOwnerId) throws EmptyDatabaseException {
+        validateNotEmptyDatabase();
+        return bookOwnerRepository.getBookByBookOwnerId(bookOwnerId);
     }
 
     public void deleteAll() throws EmptyDatabaseException {

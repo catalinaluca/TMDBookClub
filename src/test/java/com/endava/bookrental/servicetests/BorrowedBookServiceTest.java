@@ -15,6 +15,7 @@ import com.endava.bookrental.repositories.BorrowedBookRepository;
 import com.endava.bookrental.repositories.UserRepository;
 import com.endava.bookrental.services.BookOwnerService;
 import com.endava.bookrental.services.BorrowedBookService;
+import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,7 +42,7 @@ class BorrowedBookServiceTest {
     private BorrowedBookRepository borrowedBookRepository;
 
     @Mock
-    private BookOwnerService bookOwnerService;
+    private BookOwnerRepository bookOwnerRepository;
 
     @Mock
     private UserRepository userRepository;
@@ -85,7 +86,7 @@ class BorrowedBookServiceTest {
 
     @Test
     public void shouldThrowBookNotFoundException(){
-        assertThrows(BookNotFoundException.class,()->borrowedBookService.borrowBook(1,1,14));
+        assertThrows(BookNotFoundException.class,()->borrowedBookService.borrowBook(1,1,1,14));
         assertThrows(BookNotFoundException.class,()->borrowedBookService.deleteBookWithBookId(1));
     }
 
@@ -93,7 +94,7 @@ class BorrowedBookServiceTest {
     public void shouldThrowUserNotFoundException(){
         when(bookRepository.findById(1)).thenReturn(Optional.of(book));
         when(borrowedBookRepository.findAll()).thenReturn(List.of(borrowedBook));
-        assertThrows(UserNotFoundException.class,()->borrowedBookService.borrowBook(1,1,14));
+        assertThrows(UserNotFoundException.class,()->borrowedBookService.borrowBook(1,1,1,14));
         assertThrows(UserNotFoundException.class,()->borrowedBookService.getOwnedBooks(1));
     }
 
@@ -101,7 +102,18 @@ class BorrowedBookServiceTest {
     public void shouldThrowBookOwnerRelationNotFoundException(){
         when(borrowedBookRepository.findAll()).thenReturn(List.of(borrowedBook));
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(bookRepository.findById(1)).thenReturn(Optional.of(book));
         assertThrows(BookOwnerRelationNotFoundException.class,()->borrowedBookService.getOwnedBooks(1));
+        assertThrows(BookOwnerRelationNotFoundException.class,()->borrowedBookService.borrowBook(1,1,1,14));
+    }
+
+    @Test
+    public void shouldThrowIllegalArgumentException(){
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(bookRepository.findById(1)).thenReturn(Optional.of(book));
+        when(borrowedBookRepository.findBorrowedBookByBookOwnerId(1)).thenReturn(Optional.of(borrowedBook));
+        when(bookOwnerRepository.getBookByBookOwnerId(1)).thenReturn(Optional.of(book));
+        assertThrows(IllegalArgumentException.class,()->borrowedBookService.borrowBook(1,1,1,14));
     }
 
 }
