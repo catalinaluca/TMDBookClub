@@ -4,16 +4,19 @@ import com.endava.bookrental.controllers.BookOwnerController;
 import com.endava.bookrental.exceptions.*;
 import com.endava.bookrental.models.Book;
 import com.endava.bookrental.models.BorrowedBook;
+import com.endava.bookrental.repositories.BookOwnerRepository;
 import com.endava.bookrental.repositories.BookRepository;
 import com.endava.bookrental.repositories.BorrowedBookRepository;
 import com.endava.bookrental.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class BorrowedBookService {
@@ -21,7 +24,7 @@ public class BorrowedBookService {
     private BorrowedBookRepository borrowedBookRepository;
 
     @Autowired
-    private BookOwnerService bookOwnerService;
+    private BookOwnerRepository bookOwnerRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -35,6 +38,10 @@ public class BorrowedBookService {
 
     private void validateBookIdInBorrowedBooks(Integer id) throws BookNotFoundException {
         if(!borrowedBookRepository.findById(borrowedBookRepository.findBorrowedBookByBookOwnerId(id).get().getBookOwnerId()).isPresent())throw new BookNotFoundException();
+    }
+
+    private void validateBookOwnerId(Integer bookOwnerId) throws EmptyDatabaseException, BookOwnerRelationNotFoundException {
+        if(bookOwnerRepository.getBookByBookOwnerId(bookOwnerId).isEmpty())throw new BookOwnerRelationNotFoundException();
     }
 
     private void validateBookInBooks(Integer id) throws BookNotFoundException{
@@ -51,15 +58,16 @@ public class BorrowedBookService {
     }
 
 
-    public BorrowedBook borrowBook(Integer userId, Integer bookId, Integer period) throws BookNotFoundException, UserNotFoundException,IllegalArgumentException {
+    public BorrowedBook borrowBook(Integer userId,Integer bookId, Integer bookOwnerId, Integer period) throws BookNotFoundException, UserNotFoundException, IllegalArgumentException, EmptyDatabaseException, BookOwnerRelationNotFoundException {
         validateBookInBooks(bookId);
         validateUser(userId);
+        validateBookOwnerId(bookOwnerId);
+        if (borrowedBookRepository.findBorrowedBookByBookOwnerId(bookOwnerId).isPresent())throw new IllegalArgumentException();
         BorrowedBook borrowedBook = new BorrowedBook();
         borrowedBook.setUserId(userId);
-        borrowedBook.setBookOwnerId(bookOwnerService.getBookOwnerIdByBookId(bookId).get());
+        borrowedBook.setBookOwnerId(bookOwnerId);
         borrowedBook.setStartDate(Timestamp.valueOf(LocalDateTime.now()));
         borrowedBook.setEndDate(Timestamp.valueOf(LocalDateTime.now().plusDays(period)));
-        if (borrowedBookRepository.findById(borrowedBook.getBookOwnerId()).isPresent())throw new IllegalArgumentException();
         return borrowedBookRepository.save(borrowedBook);
     }
 

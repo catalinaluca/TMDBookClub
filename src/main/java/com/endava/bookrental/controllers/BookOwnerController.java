@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
-
 @RestController
 @RequestMapping("books/owners")
 public class BookOwnerController {
@@ -23,7 +22,7 @@ public class BookOwnerController {
         try {
             return bookOwnerService.getAllBooksOwners();
         } catch (EmptyDatabaseException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
@@ -31,17 +30,24 @@ public class BookOwnerController {
 
     @RequestMapping(path = "/owner", method = RequestMethod.GET)
     public Object getBooksForOwner(@RequestParam(name = "ownerId") Integer id) {
-        return bookOwnerService.getBooksForOwner(id).isEmpty() ?
-                new ResponseEntity<>("This user does not own any books!", HttpStatus.NO_CONTENT) :
-                bookOwnerService.getBooksForOwner(id);
-
+        try{
+            return bookOwnerService.getBooksForOwner(id);
+        }catch (EmptyDatabaseException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        }
     }
 
     @RequestMapping(path = "/book", method = RequestMethod.GET)
     public Object getOwnerForBook(@RequestParam(name = "bookId") Integer id) {
-        return bookOwnerService.getOwnerForBook(id).isPresent() ?
-                bookOwnerService.getOwnerForBook(id) :
-                new ResponseEntity<>("This book does not have an owner or it does not exist at all!", HttpStatus.NO_CONTENT);
+        try {
+            return bookOwnerService.getOwnerForBook(id);
+        } catch (EmptyDatabaseException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        }
     }
 
     @RequestMapping(path = "/add", method = RequestMethod.POST)
@@ -59,7 +65,7 @@ public class BookOwnerController {
             bookOwnerService.deleteAll();
             return new ResponseEntity<>("Deleted successfully!", HttpStatus.ACCEPTED);
         } catch (EmptyDatabaseException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
@@ -71,9 +77,9 @@ public class BookOwnerController {
             bookOwnerService.deleteBookOwner(id);
             return new ResponseEntity<>("Book-owner relation deleted successfully!", HttpStatus.ACCEPTED);
         } catch (BookNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (BookOwnerRelationNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }

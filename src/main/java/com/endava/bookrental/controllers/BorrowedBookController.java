@@ -38,12 +38,12 @@ public class BorrowedBookController {
     }
 
     @RequestMapping(path = "/borrow", method = RequestMethod.POST)
-    public Object borrowBook(@RequestParam(name = "userId") Integer userId, @RequestParam(name = "bookId") Integer bookId, @RequestParam(name = "period") Integer period) {
+    public Object borrowBook(@RequestParam(name = "userId") Integer userId, @RequestParam(name = "bookId") Integer bookId,  @RequestParam(name = "bookOwnerId") Integer bookOwnerId,@RequestParam(name = "period") Integer period) {
         if (!getPeriods().contains(period)) {
             return new ResponseEntity<>("The period that you gave is not accepted!", HttpStatus.BAD_REQUEST);
         }
         try {
-            return borrowedBookService.borrowBook(userId, bookId, period);
+            return borrowedBookService.borrowBook(userId, bookId,bookOwnerId, period);
         }catch (UserNotFoundException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }catch (BookNotFoundException e){

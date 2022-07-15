@@ -4,6 +4,7 @@ import com.endava.bookrental.exceptions.BookNotFoundException;
 import com.endava.bookrental.exceptions.BookOwnerRelationNotFoundException;
 import com.endava.bookrental.exceptions.EmptyDatabaseException;
 import com.endava.bookrental.models.BookOwner;
+import com.endava.bookrental.prototypes.BookOwnerPrototype;
 import com.endava.bookrental.repositories.BookOwnerRepository;
 import com.endava.bookrental.repositories.BookRepository;
 import com.endava.bookrental.services.BookOwnerService;
@@ -37,10 +38,7 @@ class BookOwnerServiceTest {
 
     @BeforeEach
     void setUp(){
-        bookOwner=new BookOwner();
-        bookOwner.setOwnerId(1);
-        bookOwner.setBookId(1);
-        bookOwner.setBookOwnerId(1);
+        bookOwner= BookOwnerPrototype.getBookOwnerPrototype();
     }
 
     @Test
@@ -48,6 +46,10 @@ class BookOwnerServiceTest {
         when(bookOwnerRepository.findAll()).thenReturn(Collections.emptyList());
         assertThrows(EmptyDatabaseException.class,()->bookOwnerService.getAllBooksOwners());
         assertThrows(EmptyDatabaseException.class,()->bookOwnerService.deleteAll());
+        assertThrows(EmptyDatabaseException.class,()->bookOwnerService.getBookOwnerIdByBookId(1));
+        assertThrows(EmptyDatabaseException.class,()->bookOwnerService.getBooksForOwner(1));
+        assertThrows(EmptyDatabaseException.class,()->bookOwnerService.getOwnerForBook(1));
+        assertThrows(EmptyDatabaseException.class,()->bookOwnerService.getBookOwnerIdByUserId(1L));
     }
 
     @Test

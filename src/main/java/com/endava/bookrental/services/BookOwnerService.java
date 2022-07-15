@@ -25,7 +25,7 @@ public class BookOwnerService {
     }
 
     private void validateBookOwner(Optional<BookOwner> bookOwner) throws BookOwnerRelationNotFoundException {
-        if (!bookOwner.isPresent()) throw new BookOwnerRelationNotFoundException();
+        if (bookOwner.isEmpty()) throw new BookOwnerRelationNotFoundException();
     }
 
     public List<BookOwner> getAllBooksOwners() throws EmptyDatabaseException {
@@ -33,27 +33,40 @@ public class BookOwnerService {
         return bookOwnerRepository.findAll();
     }
 
-    public List<BookOwner> getBooksForOwner(Integer id) {
+    public List<BookOwner> getBooksForOwner(Integer id) throws EmptyDatabaseException {
+        validateNotEmptyDatabase();
         return bookOwnerRepository.getBooksForOwner(id);
     }
 
-    public Optional<BookOwner> getOwnerForBook(Integer id) {
+    public Optional<BookOwner> getOwnerForBook(Integer id) throws EmptyDatabaseException {
+        validateNotEmptyDatabase();
         return bookOwnerRepository.getOwnerForBook(id);
     }
 
-    public Optional<Integer> getBookOwnerIdByBookId(Integer id) {
-        return bookOwnerRepository.getBookOwnerIdByBookId(id);
+    public Integer getBookOwnerIdByBookId(Integer id) throws EmptyDatabaseException, BookOwnerRelationNotFoundException {
+        validateNotEmptyDatabase();
+        Optional<BookOwner> bookOwner=bookOwnerRepository.getBookOwnerByBookId(id);
+        validateBookOwner(bookOwner);
+        return bookOwner.get().getBookOwnerId();
     }
 
-    public Optional<Integer> getBookOwnerIdByUserId(Long userId){
-       return bookOwnerRepository.getBookOwnerIdByUserId(Math.toIntExact(userId));
+    public Integer getBookOwnerIdByUserId(Long userId) throws EmptyDatabaseException, BookOwnerRelationNotFoundException {
+        validateNotEmptyDatabase();
+        List<Optional<BookOwner>> bookOwnerList=bookOwnerRepository.getBookOwnerByOwnerId(Math.toIntExact(userId));
+        validateBookOwner(bookOwnerList.get(0));
+        return bookOwnerList.get(0).get().getBookOwnerId();
     }
-    public BookOwner addBookForOwner(Book book, Integer id) {
+    public BookOwner addBookForOwner(Book book, Integer id){
         bookService.addBook(book);
         BookOwner bookOwner = new BookOwner();
         bookOwner.setBookId(book.getBookId());
         bookOwner.setOwnerId(id);
         return bookOwnerRepository.save(bookOwner);
+    }
+
+    public Optional<Book> getBookByBookOwnerId(Integer bookOwnerId) throws EmptyDatabaseException {
+        validateNotEmptyDatabase();
+        return bookOwnerRepository.getBookByBookOwnerId(bookOwnerId);
     }
 
     public void deleteAll() throws EmptyDatabaseException {
@@ -62,9 +75,8 @@ public class BookOwnerService {
     }
 
     public void deleteBookOwner(Integer id) throws BookNotFoundException, BookOwnerRelationNotFoundException {
-        if (bookOwnerRepository.findById(id).isPresent()) {
-            bookService.deleteBook(bookOwnerRepository.findById(id).get().getBookId());
-        } else throw new BookOwnerRelationNotFoundException();
+        validateBookOwner(bookOwnerRepository.findById(id));
+        bookService.deleteBook(bookOwnerRepository.findById(id).get().getBookId());
     }
 }
 
