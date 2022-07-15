@@ -25,20 +25,21 @@ public class WaitingListService {
     @Autowired
     private BookRepository bookRepository;
     private void validateUser(Integer userId) throws UserNotFoundException {
-        if(!userRepository.findAll().contains(Long.valueOf(userId)))throw new UserNotFoundException();
+        if(userRepository.findById(Long.valueOf(userId)).isEmpty())throw new UserNotFoundException();
     }
 
     private void validateWaiterId(Integer waiterId) throws WaiterNotFoundException {
-        if(!waitingListRepository.findAll().contains(waiterId))throw new WaiterNotFoundException();
+        if(waitingListRepository.findById(waiterId).isEmpty())throw new WaiterNotFoundException();
     }
     private void validateBook(Integer bookId) throws BorrowedBookNotFoundException, BookNotFoundException {
-        if(!bookRepository.findAll().contains(bookId))throw new BookNotFoundException();
-        if(!borrowedBookRepository.findAll().contains(bookId))throw new BorrowedBookNotFoundException();
+        if(bookRepository.findById(bookId).isEmpty())throw new BookNotFoundException();
+        if(borrowedBookRepository.getBookOwnerIdForBookId(bookId).isEmpty())throw new BorrowedBookNotFoundException();
     }
 
     private void validateNotEmptyDatabase() throws EmptyDatabaseException{
         if(waitingListRepository.findAll().isEmpty())throw new EmptyDatabaseException();
     }
+
     public Object addWaiter(Integer userId,Integer bookId) throws UserNotFoundException, BorrowedBookNotFoundException, BookNotFoundException {
         validateUser(userId);
         validateBook(bookId);
