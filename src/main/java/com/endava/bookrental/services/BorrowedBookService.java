@@ -51,7 +51,7 @@ public class BorrowedBookService {
     }
 
 
-    public BorrowedBook borrowBook(Integer userId, Integer bookId, Integer period) throws BookNotFoundException, UserNotFoundException,IllegalArgumentException {
+    public BorrowedBook borrowBook(Integer userId, Integer bookId, Integer period) throws BookNotFoundException, UserNotFoundException, IllegalArgumentException, EmptyDatabaseException {
         validateBookInBooks(bookId);
         validateUser(userId);
         BorrowedBook borrowedBook = new BorrowedBook();

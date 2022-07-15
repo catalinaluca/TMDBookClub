@@ -46,6 +46,10 @@ class BookOwnerServiceTest {
         when(bookOwnerRepository.findAll()).thenReturn(Collections.emptyList());
         assertThrows(EmptyDatabaseException.class,()->bookOwnerService.getAllBooksOwners());
         assertThrows(EmptyDatabaseException.class,()->bookOwnerService.deleteAll());
+        assertThrows(EmptyDatabaseException.class,()->bookOwnerService.getBookOwnerIdByBookId(1));
+        assertThrows(EmptyDatabaseException.class,()->bookOwnerService.getBooksForOwner(1));
+        assertThrows(EmptyDatabaseException.class,()->bookOwnerService.getOwnerForBook(1));
+        assertThrows(EmptyDatabaseException.class,()->bookOwnerService.getBookOwnerIdByUserId(1L));
     }
 
     @Test

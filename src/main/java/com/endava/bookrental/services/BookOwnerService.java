@@ -33,22 +33,26 @@ public class BookOwnerService {
         return bookOwnerRepository.findAll();
     }
 
-    public List<BookOwner> getBooksForOwner(Integer id) {
+    public List<BookOwner> getBooksForOwner(Integer id) throws EmptyDatabaseException {
+        validateNotEmptyDatabase();
         return bookOwnerRepository.getBooksForOwner(id);
     }
 
-    public Optional<BookOwner> getOwnerForBook(Integer id) {
+    public Optional<BookOwner> getOwnerForBook(Integer id) throws EmptyDatabaseException {
+        validateNotEmptyDatabase();
         return bookOwnerRepository.getOwnerForBook(id);
     }
 
-    public Optional<Integer> getBookOwnerIdByBookId(Integer id) {
+    public Optional<Integer> getBookOwnerIdByBookId(Integer id) throws EmptyDatabaseException {
+        validateNotEmptyDatabase();
         return bookOwnerRepository.getBookOwnerIdByBookId(id);
     }
 
-    public Optional<Integer> getBookOwnerIdByUserId(Long userId){
-       return bookOwnerRepository.getBookOwnerIdByUserId(Math.toIntExact(userId));
+    public List<Integer> getBookOwnerIdByUserId(Long userId) throws EmptyDatabaseException {
+        validateNotEmptyDatabase();
+        return bookOwnerRepository.getBookOwnerIdByUserId(Math.toIntExact(userId));
     }
-    public BookOwner addBookForOwner(Book book, Integer id) {
+    public BookOwner addBookForOwner(Book book, Integer id){
         bookService.addBook(book);
         BookOwner bookOwner = new BookOwner();
         bookOwner.setBookId(book.getBookId());
@@ -62,9 +66,8 @@ public class BookOwnerService {
     }
 
     public void deleteBookOwner(Integer id) throws BookNotFoundException, BookOwnerRelationNotFoundException {
-        if (bookOwnerRepository.findById(id).isPresent()) {
-            bookService.deleteBook(bookOwnerRepository.findById(id).get().getBookId());
-        } else throw new BookOwnerRelationNotFoundException();
+        validateBookOwner(bookOwnerRepository.findById(id));
+        bookService.deleteBook(bookOwnerRepository.findById(id).get().getBookId());
     }
 }
 
