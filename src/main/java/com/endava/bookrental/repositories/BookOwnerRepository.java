@@ -25,8 +25,8 @@ public interface BookOwnerRepository extends JpaRepository<BookOwner, Integer> {
 
     public List<Optional<BookOwner>> getBookOwnerByOwnerId(Integer ownerId);
 
-    @Query("SELECT b from books b inner join book_owner bo on b.bookId=bo.bookId where bo.bookOwnerId=:bookOnwerId")
-    public Optional<Book> getBookByBookOwnerId(Integer bookOwnerId);
+    @Query("SELECT b from books b inner join book_owner bo on b.bookId=bo.bookId where bo.bookOwnerId=:bOId")
+    public Optional<Book> getBookByBookOwnerId(Integer bOId);
 
     public void deleteBookOwnerByOwnerId(Integer userId);
  }

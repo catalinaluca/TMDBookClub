@@ -1,5 +1,6 @@
 package com.endava.bookrental.controllers;
 
+import com.endava.bookrental.SecurityConfiguration;
 import com.endava.bookrental.exceptions.EmptyDatabaseException;
 import com.endava.bookrental.exceptions.UserNotFoundException;
 import com.endava.bookrental.exceptions.UsernameNullException;
@@ -9,6 +10,8 @@ import com.endava.bookrental.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +24,7 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
 
     @RequestMapping(method = RequestMethod.GET)
     public Object getUsers(){
@@ -51,6 +55,17 @@ public class UserController {
         }catch (UsernameTakenException e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @RequestMapping(value = "/register",method = RequestMethod.POST)
+    public Object register(@RequestParam("username") String username, @RequestParam("password") String password,@RequestParam(name = "email",required = false)String email, @RequestParam(name = "firstName",required = false) String name, @RequestParam(name = "lastName",required = false) String surname) {
+        try {
+            userService.addUser(username,password,email,name,surname);
+            return new ResponseEntity<>("Registered successfully!",HttpStatus.ACCEPTED);
+        }catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        }
+
     }
 
     @RequestMapping(path = "/delete",method = RequestMethod.DELETE)
