@@ -1,11 +1,9 @@
 package com.endava.bookrental.services;
 
-import com.endava.bookrental.SecurityConfiguration;
 import com.endava.bookrental.exceptions.*;
+import com.endava.bookrental.models.Role;
 import com.endava.bookrental.models.User;
-import com.endava.bookrental.repositories.BookOwnerRepository;
 import com.endava.bookrental.repositories.UserRepository;
-import com.endava.bookrental.repositories.WaitingListRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,6 +16,8 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private RoleService roleService;
     @Autowired
     private BookOwnerService bookOwnerService;
 
@@ -50,12 +50,13 @@ public class UserService {
         return user.get();
     }
 
+
     public User addUser(User user) throws UsernameNullException,UsernameTakenException{
         validateUsername(user);
         validateUniqueUsername(user.getUsername());
         return userRepository.save(user);
     }
-    public User addUser(String username, String password, String email, String name, String surname) throws UsernameNullException,UsernameTakenException {
+    public User addUser(String username, String password, String email, String name, String surname) throws UsernameTakenException {
         validateUniqueUsername(username);
         User user=new User();
         user.setUsername(username);
