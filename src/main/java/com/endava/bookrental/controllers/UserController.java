@@ -11,9 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
-
 
 @RestController
 @RequestMapping("/users")
@@ -21,6 +18,7 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
 
     @RequestMapping(method = RequestMethod.GET)
     public Object getUsers(){
@@ -53,15 +51,31 @@ public class UserController {
         }
     }
 
+    @RequestMapping(value = "/register",method = RequestMethod.POST)
+    public Object register(@RequestParam(name = "username") String username, @RequestParam(name = "password") String password,@RequestParam(name = "email")String email, @RequestParam(name = "name",required = false) String name, @RequestParam(name = "surname",required = false) String surname) {
+        try {
+            userService.addUser(username,password,email,name,surname);
+            return new ResponseEntity<>("Registered successfully!",HttpStatus.ACCEPTED);
+        }catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
+    @RequestMapping(value = "/login",method = RequestMethod.POST)
+    public void login(@RequestParam(name = "username") String username,@RequestParam(name = "password") String password){
+
+    }
+
     @RequestMapping(path = "/delete",method = RequestMethod.DELETE)
     public Object deleteAllUsers(){
        try{
            userService.deleteAllUsers();
-           return new ResponseEntity<>("Users deleted successfully!",HttpStatus.ACCEPTED);
+           return ResponseEntity.accepted().body("Users deleted successfully");
        }catch (EmptyDatabaseException e){
-           return new ResponseEntity<>(e.getMessage(),HttpStatus.NO_CONTENT);
+           return ResponseEntity.notFound();
        }catch (Exception e){
-           return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+           return ResponseEntity.badRequest().body(e.getMessage());
        }
     }
 
