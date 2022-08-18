@@ -12,9 +12,11 @@ import com.endava.bookrental.repositories.RoleRepository;
 import com.endava.bookrental.repositories.UserRepository;
 import com.endava.bookrental.requests.LoginRequest;
 import com.endava.bookrental.requests.SignUpRequest;
+import com.endava.bookrental.responses.JwtResponse;
 import com.endava.bookrental.security.UserDetailsImpl;
 import com.endava.bookrental.security.jwt.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,14 +24,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
+
 @RestController
+@CrossOrigin(
+        origins = "http://localhost:3000",
+        allowCredentials = "true",
+        allowedHeaders = "*",
+        methods = {RequestMethod.GET,RequestMethod.POST,RequestMethod.DELETE, RequestMethod.PUT},
+        maxAge = 3600)
 @RequestMapping("/auth")
 public class AuthController {
     @Autowired
@@ -42,15 +46,20 @@ public class AuthController {
     PasswordEncoder encoder;
     @Autowired
     JwtUtils jwtUtils;
-    @PostMapping("/signin")
+    @PostMapping(value = "/signin",produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> authenticateUser(@Validated @RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
+        String jwt=jwtUtils.generateJwtToken(authentication);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(item -> item.getAuthority())
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(new JwtResponse(jwt,
+                userDetails.getId(),
+                userDetails.getUsername(),
+                userDetails.getEmail(),roles));
 
-        return ResponseEntity.ok(userDetails.toString());
     }
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Validated @RequestBody SignUpRequest signUpRequest) {

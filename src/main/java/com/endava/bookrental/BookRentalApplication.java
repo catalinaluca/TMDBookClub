@@ -14,21 +14,21 @@ import org.springframework.security.provisioning.UserDetailsManager;
 
 @SpringBootApplication
 public class BookRentalApplication {
-    @Autowired
-    PasswordEncoder passwordEncoder;
-    @Bean
-    UserDetailsManager userDetailsManager(){
-        return new InMemoryUserDetailsManager();
-    }
-
-    @Bean
-    InitializingBean initializingBean(UserDetailsManager manager){
-
-        return ()->{
-            UserDetails eu= User.withUsername("eu").password(passwordEncoder.encode("eu")).roles("USER").build();
-            manager.createUser(eu);
-        };
-    }
+//    @Autowired
+//    PasswordEncoder passwordEncoder;
+//    @Bean
+//    UserDetailsManager userDetailsManager(){
+//        return new InMemoryUserDetailsManager();
+//    }
+//
+//    @Bean
+//    InitializingBean initializingBean(UserDetailsManager manager){
+//
+//        return ()->{
+//            UserDetails eu= User.withUsername("eu").password(passwordEncoder.encode("eu")).roles("USER").build();
+//            manager.createUser(eu);
+//        };
+//    }
     public static void main(String[] args) {
         SpringApplication.run(BookRentalApplication.class, args);
     }
