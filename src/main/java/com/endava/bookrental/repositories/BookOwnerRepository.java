@@ -14,8 +14,8 @@ import java.util.Optional;
 
 @Repository
 public interface BookOwnerRepository extends JpaRepository<BookOwner, Integer> {
-    @Query("SELECT b FROM book_owner b where b.ownerId=:id")
-    public List<BookOwner> getBooksForOwner(Integer id);
+    @Query("SELECT b FROM book_owner bo INNER JOIN books b on b.bookId=bo.bookId where bo.ownerId=:id")
+    public List<Object> getBooksForOwner(Integer id);
 
     @Query("SELECT b FROM book_owner b where b.bookId=:id")
     public Optional<BookOwner> getOwnerForBook(Integer id);
@@ -29,4 +29,5 @@ public interface BookOwnerRepository extends JpaRepository<BookOwner, Integer> {
     public Optional<Book> getBookByBookOwnerId(Integer bOId);
 
     public void deleteBookOwnerByOwnerId(Integer userId);
+
  }

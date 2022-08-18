@@ -12,6 +12,12 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
+@CrossOrigin(
+        origins = "http://localhost:3000",
+        allowCredentials = "true",
+        allowedHeaders = "*",
+        methods = {RequestMethod.GET,RequestMethod.POST,RequestMethod.DELETE, RequestMethod.PUT},
+        maxAge = 3600)
 @RequestMapping("books/owners")
 public class BookOwnerController {
     @Autowired

@@ -53,6 +53,10 @@ public class BookService {
                         bookRepository.save(book);
     }
 
+    public Book editBook(Book book){
+        return bookRepository.save(book);
+    }
+
     public void deleteBook(Integer id) throws BookNotFoundException, BookOwnerRelationNotFoundException {
         validateBook(bookRepository.findById(id));
         bookRepository.deleteById(id);

@@ -11,7 +11,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
+import java.util.List;
 
+@CrossOrigin(
+        origins = "http://localhost:3000",
+        allowCredentials = "true",
+        allowedHeaders = "*",
+        methods = {RequestMethod.GET,RequestMethod.POST,RequestMethod.DELETE, RequestMethod.PUT},
+        maxAge = 3600
+)
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -20,12 +29,13 @@ public class UserController {
     private UserService userService;
 
 
+   // @RequestMapping(method = RequestMethod.GET)
     @RequestMapping(method = RequestMethod.GET)
-    public Object getUsers(){
+    public ResponseEntity<Iterable<User>> getUsers(){
         try {
-            return userService.getUsers();
+            return ResponseEntity.ok().body(userService.getUsers());
         }catch (EmptyDatabaseException e){
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.NO_CONTENT);
+            return ResponseEntity.notFound().build();
         }
 
     }
@@ -59,11 +69,6 @@ public class UserController {
         }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
-
-    }
-
-    @RequestMapping(value = "/login",method = RequestMethod.POST)
-    public void login(@RequestParam(name = "username") String username,@RequestParam(name = "password") String password){
 
     }
 

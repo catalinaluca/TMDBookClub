@@ -33,7 +33,7 @@ public class BookOwnerService {
         return bookOwnerRepository.findAll();
     }
 
-    public List<BookOwner> getBooksForOwner(Integer id) throws EmptyDatabaseException {
+    public List<Object> getBooksForOwner(Integer id) throws EmptyDatabaseException {
         validateNotEmptyDatabase();
         return bookOwnerRepository.getBooksForOwner(id);
     }
