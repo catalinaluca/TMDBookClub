@@ -48,6 +48,14 @@ public class BorrowedBookService {
         if(!bookRepository.findById(id).isPresent())throw new BookNotFoundException();
     }
 
+    private void validateNotOwnerOfBook(Integer userId,Integer bookId) throws BorrowOwnBookException{
+        if(bookOwnerRepository.getOwnerForBook(bookId).get().getOwnerId().equals(userId))throw new BorrowOwnBookException();
+    }
+
+    private void validateAvailable(Integer bookId) throws BookNotAvailableException{
+        if(borrowedBookRepository.findBorrowedBookByBookOwnerId(bookOwnerRepository.getBookOwnerByBookId(bookId).get().getBookOwnerId()).isPresent())throw new BookNotAvailableException();
+    }
+
     private void validateUser(Integer userId) throws UserNotFoundException {
         if(!userRepository.findById(Long.valueOf(userId)).isPresent())throw new UserNotFoundException();
     }
@@ -58,11 +66,12 @@ public class BorrowedBookService {
     }
 
 
-    public BorrowedBook borrowBook(Integer userId,Integer bookId, Integer bookOwnerId, Integer period) throws BookNotFoundException, UserNotFoundException, IllegalArgumentException, EmptyDatabaseException, BookOwnerRelationNotFoundException {
+    public BorrowedBook borrowBook(Integer userId,Integer bookId, Integer period) throws BookNotFoundException, UserNotFoundException, IllegalArgumentException, BorrowOwnBookException, BookNotAvailableException {
         validateBookInBooks(bookId);
+        validateAvailable(bookId);
         validateUser(userId);
-        validateBookOwnerId(bookOwnerId);
-        if (borrowedBookRepository.findBorrowedBookByBookOwnerId(bookOwnerId).isPresent())throw new IllegalArgumentException();
+        validateNotOwnerOfBook(userId,bookId);
+        Integer bookOwnerId=bookOwnerRepository.getBookOwnerByBookId(bookId).get().getBookOwnerId();
         BorrowedBook borrowedBook = new BorrowedBook();
         borrowedBook.setUserId(userId);
         borrowedBook.setBookOwnerId(bookOwnerId);

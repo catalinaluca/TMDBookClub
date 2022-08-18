@@ -11,6 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@CrossOrigin(
+        origins = "http://localhost:3000",
+        allowCredentials = "true",
+        allowedHeaders = "*",
+        methods = {RequestMethod.GET,RequestMethod.POST,RequestMethod.DELETE, RequestMethod.PUT},
+        maxAge = 3600)
 @RequestMapping("/books/borrowed")
 public class BorrowedBookController {
     @Autowired
@@ -21,7 +27,7 @@ public class BorrowedBookController {
         try {
             return borrowedBookService.getAllBorrowedBooks();
         } catch (EmptyDatabaseException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
@@ -38,16 +44,20 @@ public class BorrowedBookController {
     }
 
     @RequestMapping(path = "/borrow", method = RequestMethod.POST)
-    public Object borrowBook(@RequestParam(name = "userId") Integer userId, @RequestParam(name = "bookId") Integer bookId,  @RequestParam(name = "bookOwnerId") Integer bookOwnerId,@RequestParam(name = "period") Integer period) {
+    public Object borrowBook(@RequestParam(name = "userId") Integer userId, @RequestParam(name = "bookId") Integer bookId, @RequestParam(name = "period") Integer period) {
         if (!getPeriods().contains(period)) {
             return new ResponseEntity<>("The period that you gave is not accepted!", HttpStatus.BAD_REQUEST);
         }
         try {
-            return borrowedBookService.borrowBook(userId, bookId,bookOwnerId, period);
+            return borrowedBookService.borrowBook(userId, bookId, period);
         }catch (UserNotFoundException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }catch (BookNotFoundException e){
+        }catch (BookNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }catch (BookNotAvailableException e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
+        }catch (BorrowOwnBookException e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.FORBIDDEN);
         }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
@@ -73,11 +83,11 @@ public class BorrowedBookController {
                 return ownedList;
             }
         } catch (UserNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (EmptyDatabaseException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (BookOwnerRelationNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
@@ -93,9 +103,9 @@ public class BorrowedBookController {
                 return rentedList;
             }
         }catch (RenterNotFoundException e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
-        }catch (EmptyDatabaseException e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }catch (EmptyDatabaseException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
@@ -108,7 +118,7 @@ public class BorrowedBookController {
             borrowedBookService.deleteAllBorrowedBooks();
             return new ResponseEntity<>(HttpStatus.ACCEPTED);
         }catch (EmptyDatabaseException e){
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
         }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
@@ -120,7 +130,7 @@ public class BorrowedBookController {
             borrowedBookService.deleteBookWithBookId(bookId);
             return new ResponseEntity<>(HttpStatus.ACCEPTED);
         }catch (BookNotFoundException e){
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
         }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
         }

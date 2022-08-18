@@ -23,6 +23,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.event.RecordApplicationEvents;
 
 import java.math.BigInteger;
 import java.sql.Timestamp;
@@ -86,7 +87,7 @@ class BorrowedBookServiceTest {
 
     @Test
     public void shouldThrowBookNotFoundException(){
-        assertThrows(BookNotFoundException.class,()->borrowedBookService.borrowBook(1,1,1,14));
+        assertThrows(BookNotFoundException.class,()->borrowedBookService.borrowBook(1,1,14));
         assertThrows(BookNotFoundException.class,()->borrowedBookService.deleteBookWithBookId(1));
     }
 
@@ -94,26 +95,16 @@ class BorrowedBookServiceTest {
     public void shouldThrowUserNotFoundException(){
         when(bookRepository.findById(1)).thenReturn(Optional.of(book));
         when(borrowedBookRepository.findAll()).thenReturn(List.of(borrowedBook));
-        assertThrows(UserNotFoundException.class,()->borrowedBookService.borrowBook(1,1,1,14));
+        assertThrows(UserNotFoundException.class,()->borrowedBookService.borrowBook(1,1,14));
         assertThrows(UserNotFoundException.class,()->borrowedBookService.getOwnedBooks(1));
     }
 
-    @Test
-    public void shouldThrowBookOwnerRelationNotFoundException(){
-        when(borrowedBookRepository.findAll()).thenReturn(List.of(borrowedBook));
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(bookRepository.findById(1)).thenReturn(Optional.of(book));
-        assertThrows(BookOwnerRelationNotFoundException.class,()->borrowedBookService.getOwnedBooks(1));
-        assertThrows(BookOwnerRelationNotFoundException.class,()->borrowedBookService.borrowBook(1,1,1,14));
-    }
 
     @Test
-    public void shouldThrowIllegalArgumentException(){
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+    public void shouldThrowBorrowOwnBookException(){
         when(bookRepository.findById(1)).thenReturn(Optional.of(book));
-        when(borrowedBookRepository.findBorrowedBookByBookOwnerId(1)).thenReturn(Optional.of(borrowedBook));
-        when(bookOwnerRepository.getBookByBookOwnerId(1)).thenReturn(Optional.of(book));
-        assertThrows(IllegalArgumentException.class,()->borrowedBookService.borrowBook(1,1,1,14));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(bookOwnerRepository.getBooksForOwner(1)).thenReturn(List.of(Optional.of(book)));
+        assertThrows(BorrowOwnBookException.class,()->borrowedBookService.borrowBook(1,1,14));
     }
-
 }
