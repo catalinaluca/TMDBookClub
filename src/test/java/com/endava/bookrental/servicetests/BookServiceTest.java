@@ -56,7 +56,7 @@ class BookServiceTest {
         assertThrows(EmptyDatabaseException.class,()->bookService.getAll());
         assertThrows(EmptyDatabaseException.class,()->bookService.deleteAllBooks());
         assertThrows(EmptyDatabaseException.class,()->bookService.getAvailableBooks());
-        assertThrows(EmptyDatabaseException.class,()->bookService.getBookByTitleOrAuthor("title","author"));
+        assertThrows(EmptyDatabaseException.class,()->bookService.getBookByTitleOrAuthor("title"));
     }
 
     @Test

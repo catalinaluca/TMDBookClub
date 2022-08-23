@@ -47,6 +47,17 @@ public class BookController {
         }
     }
 
+    @RequestMapping(path = "/details",method = RequestMethod.GET)
+    public Object getDetailsByBookId(@RequestParam(name = "bookId") Integer id){
+        try {
+            return bookService.getDetailsByBookId(id);
+        } catch (BookNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @RequestMapping(path = "/add", method = RequestMethod.POST)
     public Object addBook(@RequestBody Book book) {
         try {
@@ -108,23 +119,23 @@ public class BookController {
     }
 
     @RequestMapping(path = "/searchByTitleOrAuthor", method = RequestMethod.GET)
-    public List<Object> getBookByTitleOrAuthor(@RequestParam(name = "title", required = false) String title, @RequestParam(name = "author", required = false) String author) {
+    public Object getBookByTitleOrAuthor(@RequestParam(name = "word") String words) {
         List<Object> searchList = null;
         try {
             searchList = new ArrayList<>();
-            searchList = bookService.getBookByTitleOrAuthor(title, author);
+            searchList = bookService.getBookByTitleOrAuthor(words);
             if (!searchList.isEmpty()) {
                 return searchList;
             }
         } catch (EmptyDatabaseException e) {
             searchList.add(new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND));
-            return searchList;
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
         if (!searchList.isEmpty()) {
             return searchList;
         }
         searchList.add(new ResponseEntity<>("There are no books that satisfy your search!", HttpStatus.NOT_FOUND));
-        return searchList;
+        return new ResponseEntity<>("There are no books that satisfy your search!", HttpStatus.NOT_FOUND);
     }
 
 }

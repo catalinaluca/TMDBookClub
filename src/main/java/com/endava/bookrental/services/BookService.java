@@ -47,6 +47,11 @@ public class BookService {
         return bookFound.get();
     }
 
+    public Optional<Object> getDetailsByBookId(Integer bookId) throws BookNotFoundException{
+        validateBook(bookRepository.findById(bookId));
+        return bookRepository.getDetailsByBookId(bookId);
+    }
+
     public Book addBook(Book book){
          return  bookRepository.findByTitleAuthorISBN(book.getTitle(),book.getAuthor(),book.getIsbn()).isPresent()?
                     bookRepository.findByTitleAuthorISBN(book.getTitle(),book.getAuthor(),book.getIsbn()).get():
@@ -85,8 +90,8 @@ public class BookService {
         return bookRepository.getAvailableBooks();
     }
 
-    public List<Object> getBookByTitleOrAuthor(String  title, String  author) throws EmptyDatabaseException{
+    public List<Object> getBookByTitleOrAuthor(String  words) throws EmptyDatabaseException{
         validateNotEmptyDatabase();
-        return bookRepository.getBookByTitleOrAuthor(title,author);
+        return bookRepository.getBookByTitleOrAuthor(words);
     }
 }
