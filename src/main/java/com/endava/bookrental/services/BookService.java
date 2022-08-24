@@ -72,8 +72,8 @@ public class BookService {
         if(borrowedBookRepository.findBorrowedBookByBookOwnerId(bookOwnerId).isPresent()){
             borrowedBookRepository.deleteById(borrowedBookRepository.findBorrowedBookByBookOwnerId(bookOwnerId).get().getBookOwnerId());
         }
-        if(waitingListRepository.findWaitingListByBookId(id).isPresent()){
-            waitingListRepository.deleteById(waitingListRepository.findWaitingListByBookId(id).get().getWaitingId());
+        if(!waitingListRepository.findWaitingListByBookId(id).isEmpty()){
+            waitingListRepository.deleteAllByBookId(id);
         }
     }
 

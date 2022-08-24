@@ -19,7 +19,7 @@ public interface BookRepository extends JpaRepository<Book,Integer> {
     public List<Object> getAvailableBooks();
 
     @Query(value = "Select book_filtered.book_id,book_filtered.isbn,book_filtered.title,book_filtered.author,bb.end_date from " +
-            "(SELECT b.book_id,b.title,b.author,b.isbn FROM books b where title like %?1% or author like %?1%) as book_filtered "+
+            "(SELECT b.book_id,b.title,b.author,b.isbn FROM books b where lower(title) like concat('%',lower(?1),'%') or lower(author) like concat('%',lower(?1),'%')) as book_filtered "+
                                 "left join book_owner bo on book_filtered.book_id=bo.book_id "+
                                 "left join borrowed_books bb on bo.book_owner_id=bb.book_owner_id",nativeQuery = true)
     public List<Object> getBookByTitleOrAuthor(String words);

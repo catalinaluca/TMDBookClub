@@ -54,6 +54,10 @@ public class WaitingListService {
         return waitingListRepository.findAll();
     }
 
+    public List<WaitingList> getWaitersByBookId(Integer bookId) throws BorrowedBookNotFoundException, BookNotFoundException {
+        validateBook(bookId);
+        return waitingListRepository.findWaitingListByBookId(bookId);
+    }
     public void deleteAllWaiters() throws EmptyDatabaseException {
         validateNotEmptyDatabase();
         waitingListRepository.deleteAll();

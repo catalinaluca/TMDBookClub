@@ -37,11 +37,24 @@ public class WaitingListController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public Object getWaiters(){
+    public Object getAllWaiters(){
         try {
             return waitingListService.getAllWaiters();
         }catch (EmptyDatabaseException e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
+        }catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(path = "/getWaiters",method = RequestMethod.GET)
+    public Object getWaitersForBook(@RequestParam (name="bookId") Integer bookId){
+        try {
+            return waitingListService.getWaitersByBookId(bookId);
+        }catch (BookNotFoundException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }catch (BorrowedBookNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
