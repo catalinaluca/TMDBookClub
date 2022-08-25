@@ -70,6 +70,6 @@ public class WaitingListService {
 
     public void deleteWaiterWithId(Integer id) throws WaiterNotFoundException{
         validateWaiterId(id);
-        waitingListRepository.deleteById(id);
+        waitingListRepository.deleteByWaiterId(id);
     }
 }
