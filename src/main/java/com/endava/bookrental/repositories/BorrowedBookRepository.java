@@ -21,6 +21,6 @@ public interface BorrowedBookRepository extends JpaRepository<BorrowedBook,Integ
     @Query("SELECT b,bb.endDate FROM borrowed_books bb inner join book_owner bo on bb.bookOwnerId=bo.bookOwnerId left join books b on bo.bookId=b.bookId where bb.userId=:userId")
     public List<Object> getRentedBooks(Integer userId);
 
-    @Query("SELECT bo.bookOwnerId FROM book_owner bo inner join borrowed_books bb on bb.bookOwnerId=bo.bookOwnerId")
+    @Query("SELECT bo.bookOwnerId FROM book_owner bo inner join borrowed_books bb on bb.bookOwnerId=bo.bookOwnerId where bo.bookId=:id")
     public Optional<Integer> getBookOwnerIdForBookId(Integer id);
 }

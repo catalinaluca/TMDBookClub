@@ -25,8 +25,10 @@ public class WaitingListController {
     public Object addWaiter(@RequestParam(name = "userId") Integer userId,@RequestParam(name = "bookId") Integer bookId){
        try{
            return waitingListService.addWaiter(userId,bookId);
-       }catch (UserNotFoundException e){
-           return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
+       }catch (UserNotFoundException e) {
+           return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+       }catch (BorrowedBookOnWaitingException e){
+           return new ResponseEntity<>(e.getMessage(),HttpStatus.CONFLICT);
        }catch (BookNotFoundException e){
            return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
        }catch (BorrowedBookNotFoundException e){

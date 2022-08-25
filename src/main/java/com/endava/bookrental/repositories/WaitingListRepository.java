@@ -13,5 +13,7 @@ import java.util.Optional;
 public interface WaitingListRepository extends JpaRepository<WaitingList,Integer> {
     public List<WaitingList> findWaitingListByBookId(Integer id);
 
+    public Optional<WaitingList> findWaitingListByWaiterId(Integer userId);
+
     public void deleteAllByBookId(Integer id);
 }

@@ -29,7 +29,7 @@ public class WaitingListService {
     }
 
     private void validateWaiterId(Integer waiterId) throws WaiterNotFoundException {
-        if(waitingListRepository.findById(waiterId).isEmpty())throw new WaiterNotFoundException();
+        if(waitingListRepository.findWaitingListByWaiterId(waiterId).isEmpty())throw new WaiterNotFoundException();
     }
     private void validateBook(Integer bookId) throws BorrowedBookNotFoundException, BookNotFoundException {
         if(bookRepository.findById(bookId).isEmpty())throw new BookNotFoundException();
@@ -40,9 +40,14 @@ public class WaitingListService {
         if(waitingListRepository.findAll().isEmpty())throw new EmptyDatabaseException();
     }
 
-    public Object addWaiter(Integer userId,Integer bookId) throws UserNotFoundException, BorrowedBookNotFoundException, BookNotFoundException {
+    private void validateNotBorrowed(Integer userId) throws BorrowedBookOnWaitingException{
+        if (waitingListRepository.findWaitingListByWaiterId(userId).isPresent())throw new BorrowedBookOnWaitingException();
+    }
+
+    public Object addWaiter(Integer userId,Integer bookId) throws UserNotFoundException, BorrowedBookNotFoundException, BookNotFoundException, BorrowedBookOnWaitingException {
         validateUser(userId);
         validateBook(bookId);
+        validateNotBorrowed(userId);
         WaitingList waitingList=new WaitingList();
         waitingList.setWaiterId(userId);
         waitingList.setBookId(bookId);
