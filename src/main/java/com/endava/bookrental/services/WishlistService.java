@@ -1,9 +1,6 @@
 package com.endava.bookrental.services;
 
-import com.endava.bookrental.exceptions.BookNotFoundException;
-import com.endava.bookrental.exceptions.BorrowedBookNotFoundException;
-import com.endava.bookrental.exceptions.EmptyDatabaseException;
-import com.endava.bookrental.exceptions.UserNotFoundException;
+import com.endava.bookrental.exceptions.*;
 import com.endava.bookrental.models.WishList;
 import com.endava.bookrental.repositories.BookRepository;
 import com.endava.bookrental.repositories.UserRepository;
@@ -36,6 +33,10 @@ public class WishlistService {
         if(bookRepository.findById(bookId).isEmpty())throw new BookNotFoundException();
     }
 
+    private void validateBookNotInWishlist(Integer bookId) throws BookAlreadyOnWishlistException {
+        if(wishlistRepository.findWishListByBookId(bookId).isPresent())throw new BookAlreadyOnWishlistException();
+    }
+
     public List<WishList> getAll() throws EmptyDatabaseException {
         validateNotEmptyDatabase();
         return wishlistRepository.findAll();
@@ -47,9 +48,10 @@ public class WishlistService {
         return wishlistRepository.findAllByUserId(userId);
     }
 
-    public WishList addBookOnWishlist(Integer userId, Integer bookId) throws UserNotFoundException, BookNotFoundException {
+    public WishList addBookOnWishlist(Integer userId, Integer bookId) throws UserNotFoundException, BookNotFoundException, BookAlreadyOnWishlistException {
         validateUser(userId);
         validateBook(bookId);
+        validateBookNotInWishlist(bookId);
         WishList wishList=new WishList();
         wishList.setUserId(userId);
         wishList.setBookId(bookId);
@@ -59,7 +61,7 @@ public class WishlistService {
     public void deleteBookFromWishlist(Integer userId,Integer bookId) throws BookNotFoundException, UserNotFoundException {
         validateUser(userId);
         validateBook(bookId);
-        wishlistRepository.deleteByBookIdAndUserId(userId,bookId);
+        wishlistRepository.deleteWishListByUserIdAndBookId(userId,bookId);
     }
 
     public void deleteAllWishes() throws EmptyDatabaseException {

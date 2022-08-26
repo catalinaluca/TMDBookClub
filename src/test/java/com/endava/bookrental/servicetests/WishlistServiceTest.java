@@ -1,5 +1,6 @@
 package com.endava.bookrental.servicetests;
 
+import com.endava.bookrental.exceptions.BookAlreadyOnWishlistException;
 import com.endava.bookrental.exceptions.BookNotFoundException;
 import com.endava.bookrental.exceptions.EmptyDatabaseException;
 import com.endava.bookrental.exceptions.UserNotFoundException;
@@ -20,6 +21,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -71,5 +73,13 @@ public class WishlistServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         assertThrows(BookNotFoundException.class, () -> wishlistService.addBookOnWishlist(1,1));
         assertThrows(BookNotFoundException.class, () -> wishlistService.deleteBookFromWishlist(1,1));
+    }
+
+    @Test
+    public void shouldThrowBookAlreadyInWishlistException() throws UserNotFoundException, EmptyDatabaseException {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(bookRepository.findById(1)).thenReturn(Optional.of(book));
+        when(wishlistRepository.findWishListByBookId(1)).thenReturn(Optional.of(wishList));
+        assertThrows(BookAlreadyOnWishlistException.class, () -> wishlistService.addBookOnWishlist(1,1));
     }
 }
