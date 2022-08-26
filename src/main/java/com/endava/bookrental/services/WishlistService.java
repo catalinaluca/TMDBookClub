@@ -32,7 +32,7 @@ public class WishlistService {
     private void validateUser(Integer userId) throws UserNotFoundException {
         if(userRepository.findById(Long.valueOf(userId)).isEmpty())throw new UserNotFoundException();
     }
-    private void validateBook(Integer bookId) throws BorrowedBookNotFoundException, BookNotFoundException {
+    private void validateBook(Integer bookId) throws BookNotFoundException {
         if(bookRepository.findById(bookId).isEmpty())throw new BookNotFoundException();
     }
 
@@ -47,7 +47,7 @@ public class WishlistService {
         return wishlistRepository.findAllByUserId(userId);
     }
 
-    public WishList addBookOnWishlist(Integer userId, Integer bookId) throws UserNotFoundException, BorrowedBookNotFoundException, BookNotFoundException {
+    public WishList addBookOnWishlist(Integer userId, Integer bookId) throws UserNotFoundException, BookNotFoundException {
         validateUser(userId);
         validateBook(bookId);
         WishList wishList=new WishList();
@@ -56,12 +56,14 @@ public class WishlistService {
         return wishlistRepository.save(wishList);
     }
 
-    public void deleteBookFromWishlist(Integer bookId) throws BorrowedBookNotFoundException, BookNotFoundException {
+    public void deleteBookFromWishlist(Integer userId,Integer bookId) throws BookNotFoundException, UserNotFoundException {
+        validateUser(userId);
         validateBook(bookId);
-        wishlistRepository.deleteByBookId(bookId);
+        wishlistRepository.deleteByBookIdAndUserId(userId,bookId);
     }
 
-    public void deleteAllWishes(){
+    public void deleteAllWishes() throws EmptyDatabaseException {
+        validateNotEmptyDatabase();
         wishlistRepository.deleteAll();
     }
 }

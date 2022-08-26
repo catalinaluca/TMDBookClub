@@ -60,9 +60,9 @@ public class WishlistController {
     }
 
     @RequestMapping(path = "/delete/wish",method = RequestMethod.DELETE)
-    public Object deleteFromWishlist(@RequestParam (name="bookId") Integer bookId){
+    public Object deleteFromWishlist(@RequestParam (name = "userId") Integer userId,@RequestParam (name="bookId") Integer bookId){
         try {
-            wishlistService.deleteBookFromWishlist(bookId);
+            wishlistService.deleteBookFromWishlist(userId,bookId);
             return new ResponseEntity<>(HttpStatus.ACCEPTED);
         }catch (BookNotFoundException e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
@@ -76,6 +76,8 @@ public class WishlistController {
         try {
             wishlistService.deleteAllWishes();
             return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        }catch (EmptyDatabaseException e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
         }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
