@@ -1,5 +1,6 @@
 package com.endava.bookrental.controllers;
 
+import com.endava.bookrental.exceptions.BookAlreadyOnWishlistException;
 import com.endava.bookrental.exceptions.BookNotFoundException;
 import com.endava.bookrental.exceptions.EmptyDatabaseException;
 import com.endava.bookrental.exceptions.UserNotFoundException;
@@ -52,8 +53,10 @@ public class WishlistController {
             return wishlistService.addBookOnWishlist(userId,bookId);
         }catch (UserNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }catch (BookNotFoundException e){
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
+        }catch (BookNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }catch (BookAlreadyOnWishlistException e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.CONFLICT);
         }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
@@ -63,7 +66,7 @@ public class WishlistController {
     public Object deleteFromWishlist(@RequestParam (name = "userId") Integer userId,@RequestParam (name="bookId") Integer bookId){
         try {
             wishlistService.deleteBookFromWishlist(userId,bookId);
-            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+            return new ResponseEntity<>("Book with ID:"+bookId+" removed from your wishlist!",HttpStatus.ACCEPTED);
         }catch (BookNotFoundException e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
         }catch (Exception e){
