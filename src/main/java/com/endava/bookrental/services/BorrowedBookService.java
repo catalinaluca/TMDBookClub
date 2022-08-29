@@ -77,13 +77,16 @@ public class BorrowedBookService {
         borrowedBook.setBookOwnerId(bookOwnerId);
         borrowedBook.setStartDate(Timestamp.valueOf(LocalDateTime.now()));
         borrowedBook.setEndDate(Timestamp.valueOf(LocalDateTime.now().plusDays(period)));
+        borrowedBook.setExtended(false);
         return borrowedBookRepository.save(borrowedBook);
     }
 
-    public BorrowedBook extendPeriod(Integer rentingId) {
+    public BorrowedBook extendPeriod(Integer rentingId) throws ExtendedOnceException {
         BorrowedBook borrowedBook = borrowedBookRepository.findById(rentingId).get();
+        if(borrowedBook.isExtended())throw new ExtendedOnceException();
         borrowedBookRepository.deleteById(rentingId);
         borrowedBook.setEndDate(Timestamp.valueOf(borrowedBook.getEndDate().toLocalDateTime().plusDays(14)));
+        borrowedBook.setExtended(true);
         return borrowedBookRepository.save(borrowedBook);
     }
 

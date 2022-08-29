@@ -68,13 +68,15 @@ public class BorrowedBookController {
     public Object extendPeriod(@RequestParam(name = "rentingId") Integer rentingId) {
         try {
             return borrowedBookService.extendPeriod(rentingId);
+        }catch (ExtendedOnceException e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.CONFLICT);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
     }
 
-    @RequestMapping(path = "/myBooks", method = RequestMethod.GET)
+    @RequestMapping(path = "/owned", method = RequestMethod.GET)
     public Object getOwnedBooks(@RequestParam(name = "ownerId") Integer ownerId) {
         List<Object> ownedList = null;
         try {

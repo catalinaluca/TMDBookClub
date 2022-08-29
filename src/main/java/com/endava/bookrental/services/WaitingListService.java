@@ -1,6 +1,7 @@
 package com.endava.bookrental.services;
 
 import com.endava.bookrental.exceptions.*;
+import com.endava.bookrental.models.BorrowedBook;
 import com.endava.bookrental.models.WaitingList;
 import com.endava.bookrental.repositories.BookRepository;
 import com.endava.bookrental.repositories.BorrowedBookRepository;
@@ -40,14 +41,16 @@ public class WaitingListService {
         if(waitingListRepository.findAll().isEmpty())throw new EmptyDatabaseException();
     }
 
-    private void validateNotBorrowed(Integer userId) throws BorrowedBookOnWaitingException{
-        if (waitingListRepository.findWaitingListByWaiterId(userId).isPresent())throw new BorrowedBookOnWaitingException();
+    private void validateNotBorrowed(Integer userId,Integer bookId) throws BorrowedBookOnWaitingException{
+        Integer boId=borrowedBookRepository.getBookOwnerIdForBookId(bookId).get();
+        BorrowedBook borrowedBook=borrowedBookRepository.findBorrowedBookByBookOwnerId(boId).get();
+        if (borrowedBook.getUserId().equals(userId))throw new BorrowedBookOnWaitingException();
     }
 
     public Object addWaiter(Integer userId,Integer bookId) throws UserNotFoundException, BorrowedBookNotFoundException, BookNotFoundException, BorrowedBookOnWaitingException {
         validateUser(userId);
         validateBook(bookId);
-        validateNotBorrowed(userId);
+        validateNotBorrowed(userId,bookId);
         WaitingList waitingList=new WaitingList();
         waitingList.setWaiterId(userId);
         waitingList.setBookId(bookId);

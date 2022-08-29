@@ -17,6 +17,9 @@ public class BorrowedBook {
     @Column(nullable = false)
     private Integer bookOwnerId;
 
+    @Column(nullable = false)
+    private boolean extended;
+
     public Integer getRentingId() {
         return rentingId;
     }
@@ -57,6 +60,14 @@ public class BorrowedBook {
         this.bookOwnerId = bookOwnerId;
     }
 
+    public boolean isExtended() {
+        return extended;
+    }
+
+    public void setExtended(boolean extended) {
+        this.extended = extended;
+    }
+
     @Override
     public String toString() {
         return "BorrowedBook{" +
@@ -65,6 +76,7 @@ public class BorrowedBook {
                 ", endDate=" + endDate +
                 ", userId=" + userId +
                 ", bookOwnerId=" + bookOwnerId +
+                ", extended=" + extended +
                 '}';
     }
 }
